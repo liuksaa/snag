@@ -23,7 +23,7 @@ borrows cookies from the browser you use most. To choose one yourself:
 
   SNAG_BROWSER=brave snag        (also chrome, firefox, edge, safari)
 
-^t switches theme (auto, light, dark) and ^l switches language. Both are
+^T switches theme (auto, light, dark) and ^L switches language. Both are
 remembered. snag follows your system language by default, or pin one:
 
   SNAG_LANG=es snag              en de es fr hi id ja pt ru tr zh

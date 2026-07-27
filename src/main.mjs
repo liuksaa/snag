@@ -21,12 +21,12 @@ const SAVE_TO = path.join(os.homedir(), 'Downloads')
 
 const hintsFor = at =>
   ({
-    home: [['↵', t('snag')], ['^c', t('quit')]],
-    working: [['esc', t('cancel')], ['^c', t('quit')]],
+    home: [['↵', t('snag')], ['^C', t('quit')]],
+    working: [['esc', t('cancel')], ['^C', t('quit')]],
     picker: [['↑↓', t('choose')], ['↵', t('snag')], ['esc', t('back')]],
     downloading: [['esc', t('cancel')]],
-    finished: [['↵', t('another')], ['^c', t('quit')]],
-    failed: [['↵', t('tryAgain')], ['^c', t('quit')]],
+    finished: [['↵', t('another')], ['^C', t('quit')]],
+    failed: [['↵', t('tryAgain')], ['^C', t('quit')]],
     languages: [['↑↓', t('choose')], ['↵', t('snag')], ['esc', t('back')]],
   })[at] ?? []
 
@@ -331,7 +331,7 @@ export async function start({url: initialUrl} = {}) {
 
   screen.open((frame, size) => {
     const body = view[state.at === 'home' ? 'home' : state.at](state, frame, size)
-    return [...body, '', '', hints([...hintsFor(state.at), ['^l', LANGUAGE_NAMES[language()]], ['^t', currentTheme()]], size.cols)]
+    return [...body, '', '', hints([...hintsFor(state.at), ['^L', LANGUAGE_NAMES[language()]], ['^T', currentTheme()]], size.cols)]
   }, onKey)
 
   // launching with a url, or with one already on the clipboard, skips the typing

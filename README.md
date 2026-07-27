@@ -45,21 +45,21 @@ Type or paste a link and press enter. Pick a quality with ↑/↓ and press ente
 again. Files land in `~/Downloads`, and snag says where.
 
 Press a number on the home screen to grab one of your recent links again.
-`esc` goes back, `^c` quits.
+`esc` goes back, `^C` quits.
 
 | key | what it does |
 | --- | --- |
 | `↵` | snag the link |
 | `1`–`5` | re-snag a recent link |
 | `↑` `↓` | move through the quality list |
-| `^t` | theme: auto, light, dark |
-| `^l` | language |
+| `^T` | theme: auto, light, dark |
+| `^L` | language |
 | `esc` | back or cancel |
-| `^c` | quit |
+| `^C` | quit |
 
 ## Themes
 
-`^t` cycles **auto**, **light** and **dark**, and remembers your choice.
+`^T` cycles **auto**, **light** and **dark**, and remembers your choice.
 
 `auto` is the default and usually the right one: it paints with your
 terminal's own colours, so snag matches whatever theme you already use. Pick
@@ -89,7 +89,7 @@ using [VLC](https://www.videolan.org).
 snag follows whatever language your system is set to, and falls back to English
 if it has no translation for it.
 
-Press `^l` to open the language list, pick one with the arrow keys, and press
+Press `^L` to open the language list, pick one with the arrow keys, and press
 enter. Your choice is remembered, so snag opens in it from then on. To override
 it for a single run:
 

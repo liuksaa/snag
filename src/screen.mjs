@@ -2,7 +2,7 @@
 // loop. Views stay pure (state in, array-of-lines out); this is the only place
 // that talks to stdout.
 
-import {RESET, SHADE, inkBg} from './paint.mjs'
+import {RESET, SHADE, inkBg, width} from './paint.mjs'
 
 const out = s => process.stdout.write(s)
 
@@ -80,11 +80,22 @@ export class Screen {
     // keeps the redraw flicker-free.
     let buf = ''
     for (let row = 0; row < size.rows; row++) {
-      const line = lines[row - top]
+      const line = lines[row - top] ?? ''
       // views end, and sometimes interrupt, their lines with a full reset,
       // which drops the background along with the colour
-      const body = line === undefined ? '' : page ? line.replaceAll(RESET, RESET + page) : line
-      buf += `\x1b[${row + 1};1H` + page + '\x1b[K' + body
+      const body = page ? line.replaceAll(RESET, RESET + page) : line
+
+      buf += `\x1b[${row + 1};1H` + page + body
+      if (page) {
+        // Fill the rest of the row with real spaces rather than an erase.
+        // Erasing is meant to use the active background, but not every terminal
+        // honours that, which leaves the untouched part of a row showing through
+        // in the terminal's own colour — the stripes down a themed screen.
+        // Spaces are ordinary characters, so they are painted everywhere.
+        buf += ' '.repeat(Math.max(0, size.cols - width(body)))
+      } else {
+        buf += '\x1b[K'
+      }
     }
     buf += RESET
     out(buf)

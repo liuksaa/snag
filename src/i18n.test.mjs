@@ -72,3 +72,20 @@ test('the input frame stays aligned in every language', () => {
   }
   setLanguage('en')
 })
+
+test('a language you pick is remembered, but a one-off override still wins', () => {
+  const env = {LANG: 'en_US.UTF-8'}
+  assert.equal(detectLanguage(env, undefined), 'en', 'no preference yet: follow the system')
+  assert.equal(detectLanguage(env, 'ja'), 'ja', 'a saved choice beats the system locale')
+  assert.equal(detectLanguage({...env, SNAG_LANG: 'fr'}, 'ja'), 'fr', 'SNAG_LANG beats both')
+  assert.equal(detectLanguage(env, 'xx'), 'en', 'a nonsense saved value is ignored')
+})
+
+test('the language grid lines up whatever the scripts', () => {
+  const options = LANGUAGES.map(code => ({code, name: LANGUAGE_NAMES[code]}))
+  const rows = view
+    .languages({options, cursor: 5}, 6, {cols: 74, rows: 34})
+    .filter(l => / [a-z]{2}(\x1b|\s|$)/.test(l))
+  const starts = rows.map(l => l.replace(/\x1b\[[0-9;]*m/g, '').search(/\S/))
+  assert.ok(starts.every(s => s === starts[0]), `rows start at columns ${starts.join(',')}`)
+})

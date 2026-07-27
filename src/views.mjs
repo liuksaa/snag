@@ -191,6 +191,35 @@ function wrap(text, room) {
   return lines.length ? lines : ['']
 }
 
+/**
+ * Choosing a language. Each option is written in its own script, because
+ * someone looking for their language is looking for the word they know, not
+ * its English name.
+ */
+export function languages(state, frame, size) {
+  const COL = 20
+  const perRow = Math.max(1, Math.min(3, Math.floor((size.cols - 8) / COL)))
+  // one indent for the whole grid, so the columns line up instead of each row
+  // centring itself to a different width
+  const indent = ' '.repeat(Math.max(0, Math.floor((size.cols - perRow * COL) / 2)))
+  const rows = []
+
+  for (let i = 0; i < state.options.length; i += perRow) {
+    let line = indent
+    state.options.slice(i, i + perRow).forEach((option, j) => {
+      const on = i + j === state.cursor
+      const mark = on ? rgb(...aurora(0.15)) + '❯ ' : '  '
+      const name = on ? ink(SHADE.bright) + BOLD + option.name + UNBOLD : ink(SHADE.text) + option.name
+      const cell = `${option.name} ${option.code}`
+      line += mark + name + ink(SHADE.faint) + ' ' + option.code + RESET
+      line += ' '.repeat(Math.max(1, COL - width(cell) - 2))
+    })
+    rows.push(line.trimEnd())
+  }
+
+  return shell(frame, size, [centre(ink(SHADE.faint) + t('language') + RESET, size.cols), blank(), ...rows])
+}
+
 /** The footer hint strip, rendered by main for whatever screen is up. */
 export function hints(pairs, cols) {
   const text = pairs

@@ -347,16 +347,23 @@ export const LANGUAGE_NAMES = {
   tr: 'Türkçe',
 }
 
-/** Read the system's language, e.g. "fr_FR.UTF-8" or "zh-Hans-CN" -> fr / zh. */
-export function detectLanguage(env = process.env) {
+export const known = code => Object.hasOwn(TRANSLATIONS, code)
+
+/**
+ * Which language to open in, in order of how deliberate the choice was:
+ * SNAG_LANG for this run, then a language you picked before, then whatever the
+ * system is set to, then English.
+ */
+export function detectLanguage(env = process.env, saved) {
   const pinned = env.SNAG_LANG?.trim().toLowerCase().slice(0, 2)
-  if (pinned && TRANSLATIONS[pinned]) return pinned
+  if (pinned && known(pinned)) return pinned
+  if (saved && known(saved)) return saved
 
   for (const key of ['LC_ALL', 'LC_MESSAGES', 'LANG', 'LANGUAGE']) {
     const raw = env[key]
     if (!raw || raw === 'C' || raw === 'POSIX') continue
     const code = raw.toLowerCase().split(/[._:-]/)[0]
-    if (TRANSLATIONS[code]) return code
+    if (known(code)) return code
   }
   return 'en'
 }
@@ -365,13 +372,8 @@ let current = detectLanguage()
 
 export const language = () => current
 export const setLanguage = code => {
-  if (TRANSLATIONS[code]) current = code
+  if (known(code)) current = code
   return current
-}
-/** Move to the next available language, for the in-app shortcut. */
-export const nextLanguage = () => {
-  const i = LANGUAGES.indexOf(current)
-  return setLanguage(LANGUAGES[(i + 1) % LANGUAGES.length])
 }
 
 /**

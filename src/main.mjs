@@ -12,7 +12,8 @@ import {buildMenu} from './core/formats.mjs'
 import {browsersToTry, definitelyNeedsLogin, loginAdvice, mightNeedLogin} from './core/access.mjs'
 import {adviseBeforeTrying, explain, looksLikeUrl, siteName} from './core/links.mjs'
 import {loadRecent, remember} from './core/recent.mjs'
-import {LANGUAGE_NAMES, language, nextLanguage, t} from './i18n.mjs'
+import {LANGUAGES, LANGUAGE_NAMES, detectLanguage, language, setLanguage, t} from './i18n.mjs'
+import {loadSettings, saveSetting} from './core/settings.mjs'
 import {readClipboard} from './core/clipboard.mjs'
 
 const SAVE_TO = path.join(os.homedir(), 'Downloads')
@@ -25,10 +26,12 @@ const hintsFor = at =>
     downloading: [['esc', t('cancel')]],
     finished: [['↵', t('another')], ['^c', t('quit')]],
     failed: [['↵', t('tryAgain')], ['^c', t('quit')]],
+    languages: [['↑↓', t('choose')], ['↵', t('snag')], ['esc', t('back')]],
   })[at] ?? []
 
 export async function start({url: initialUrl} = {}) {
   const screen = new Screen()
+  setLanguage(detectLanguage(process.env, loadSettings().language))
 
   const state = {
     at: 'home',
@@ -51,6 +54,8 @@ export async function start({url: initialUrl} = {}) {
     stage: '',
     file: '',
     error: '',
+    options: LANGUAGES.map(code => ({code, name: LANGUAGE_NAMES[code]})),
+    cameFrom: 'home',
   }
 
   let ytdlp = ''
@@ -242,9 +247,30 @@ export async function start({url: initialUrl} = {}) {
   }
 
   const onKey = key => {
-    if (key === '\x0c') {
-      // ^l — cycle language; every screen re-renders from the new strings
-      nextLanguage()
+    if (key === '\x0c' && state.at !== 'languages') {
+      // ^l opens the language list rather than cycling blindly through eleven
+      state.cameFrom = state.at
+      state.cursor = Math.max(0, state.options.findIndex(o => o.code === language()))
+      return go('languages')
+    }
+
+    if (state.at === 'languages') {
+      const last = state.options.length - 1
+      if (key === KEY.up) state.cursor = state.cursor === 0 ? last : state.cursor - 1
+      if (key === KEY.down) state.cursor = state.cursor === last ? 0 : state.cursor + 1
+      if (key === KEY.left) state.cursor = Math.max(0, state.cursor - 1)
+      if (key === KEY.right) state.cursor = Math.min(last, state.cursor + 1)
+      if (key === KEY.enter) {
+        // remembered, so it is still your language next time you open snag
+        setLanguage(state.options[state.cursor].code)
+        saveSetting('language', language())
+        state.cursor = 0
+        return go(state.cameFrom === 'languages' ? 'home' : state.cameFrom)
+      }
+      if (key === KEY.escape) {
+        state.cursor = 0
+        return go(state.cameFrom === 'languages' ? 'home' : state.cameFrom)
+      }
       return
     }
     if (key === KEY.escape) {

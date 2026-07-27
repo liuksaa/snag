@@ -68,8 +68,11 @@ using [VLC](https://www.videolan.org).
 ## Languages
 
 snag follows whatever language your system is set to, and falls back to English
-if it has no translation for it. Press `^l` while it is running to change
-language, or pin one:
+if it has no translation for it.
+
+Press `^l` to open the language list, pick one with the arrow keys, and press
+enter. Your choice is remembered, so snag opens in it from then on. To override
+it for a single run:
 
 ```sh
 SNAG_LANG=hi snag

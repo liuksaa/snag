@@ -16,6 +16,7 @@
   "scripts": {
     "start": "node bin/snag.mjs",
     "test": "node --test src/",
+    "check": "tsc -p jsconfig.json",
     "vibe": "node vibe.mjs",
     "keys": "node keys.mjs"
   },
@@ -32,5 +33,9 @@
     "cli",
     "tui",
     "terminal"
-  ]
+  ],
+  "devDependencies": {
+    "@types/node": "^26.1.1",
+    "typescript": "^7.0.2"
+  }
 }

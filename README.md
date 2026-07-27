@@ -6,14 +6,7 @@ Download videos from YouTube, Instagram, X, TikTok, Reddit and 1,700+ other
 sites, from your terminal. Paste a link, pick a quality, done. No popups, no
 fake download buttons, no sketchy redirects.
 
-```
-███████╗███╗   ██╗ █████╗  ██████╗
-██╔════╝████╗  ██║██╔══██╗██╔════╝
-███████╗██╔██╗ ██║███████║██║  ███╗
-╚════██║██║╚██╗██║██╔══██║██║   ██║
-███████║██║ ╚████║██║  ██║╚██████╔╝
-╚══════╝╚═╝  ╚═══╝╚═╝  ╚═╝ ╚═════╝
-```
+<img src="assets/home.png" alt="snag's home screen: the wordmark, a link field, and your recent downloads numbered for one-key access" width="100%">
 
 ## Install
 
@@ -74,11 +67,10 @@ with a black screen.
 
 snag labels every option with the codec you are actually getting:
 
-```
-❯ 1080p HD    VP9    4.3 MB    needs VLC
-  720p        H.264  2.1 MB    ★ plays anywhere
-  audio only  1.3 MB
-```
+<img src="assets/picker.png" alt="the quality picker: each resolution labelled with its codec, and the ones needing VLC marked as such" width="100%">
+
+Here every option this reel offers is VP9, so all of them are marked. When a
+site does offer an H.264 version, that one is starred instead.
 
 The ★ is the sharpest option that plays everywhere. Take it and the file just
 opens. Take a `needs VLC` one when you want maximum quality and don't mind
@@ -141,8 +133,15 @@ link. snag tells you this instead of failing cryptically.
 ```sh
 npm start            # run it
 npm test             # unit tests
+npm run check        # type-check the JavaScript
 npm run vibe         # flip through alternative front-page designs
+npm run keys         # see what your terminal sends for a given key
 ```
+
+The source is plain JavaScript and is never compiled, so a clone runs as-is.
+Types are declared in JSDoc comments and checked by `npm run check`, which
+catches the mistakes a compiler would while keeping the runtime dependency
+free. Shared shapes live in `src/types.mjs`.
 
 ```
 src/

@@ -21,7 +21,9 @@ export const KEY = {
 
 export class Screen {
   #timer
+  /** @type {(key: string) => void} */
   #onKey = () => {}
+  /** @type {(frame: number, size: import('./types.mjs').Size) => string[]} */
   #render = () => []
   #frame = 0
   #closed = false
@@ -45,7 +47,8 @@ export class Screen {
     process.stdin.setRawMode?.(true)
     process.stdin.resume()
     process.stdin.setEncoding('utf8')
-    process.stdin.on('data', k => {
+    process.stdin.on('data', raw => {
+      const k = String(raw)
       if (k === KEY.ctrlC) return this.close(0)
       this.#onKey(k)
       this.draw()

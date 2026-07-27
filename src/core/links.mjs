@@ -1,6 +1,7 @@
 // links.mjs — reading a pasted url: which site it is, whether it points at one
 // video, and how to say so when it doesn't.
 
+/** @type {Array<[string[], string]>} */
 const SITES = [
   [['youtube.com', 'youtu.be', 'music.youtube.com'], 'YouTube'],
   [['instagram.com'], 'Instagram'],
@@ -23,7 +24,7 @@ const parse = url => {
 
 export function looksLikeUrl(input) {
   const u = parse(input)
-  return Boolean(u) && (u.protocol === 'http:' || u.protocol === 'https:')
+  return u !== null && (u.protocol === 'http:' || u.protocol === 'https:')
 }
 
 export function siteName(url) {
@@ -79,6 +80,7 @@ export function profileAdvice(url) {
 }
 
 // Sites yt-dlp has no extractor for at all, so no amount of retrying will help.
+/** @type {Array<[RegExp, string]>} */
 const UNSUPPORTED = [
   [
     /(^|\.)threads\.(net|com)$/,

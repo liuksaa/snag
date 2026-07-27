@@ -1,0 +1,22 @@
+{
+  "//": "Type checking for plain JavaScript. Nothing here is compiled: the .mjs files are what runs, exactly as written. This only powers `npm run check` and your editor's autocomplete, so a fresh clone still runs with nothing installed.",
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "lib": ["ES2022"],
+    "types": ["node"],
+
+    "checkJs": true,
+    "allowJs": true,
+    "noEmit": true,
+
+    "strict": false,
+    "noImplicitAny": false,
+    "strictNullChecks": true,
+    "noUnusedLocals": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true
+  },
+  "include": ["src/**/*.mjs", "bin/**/*.mjs"]
+}

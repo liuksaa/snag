@@ -31,6 +31,7 @@ const hintsFor = at =>
     languages: [['↑↓', t('choose')], ['↵', t('snag')], ['esc', t('back')]],
   })[at] ?? []
 
+/** @param {{url?: string}} [opts] */
 export async function start({url: initialUrl} = {}) {
   const screen = new Screen()
   const saved = loadSettings()
@@ -44,6 +45,7 @@ export async function start({url: initialUrl} = {}) {
     notice: '',
     status: '',
     recent: loadRecent(),
+    /** @type {import('./types.mjs').Choice[]} */
     menu: [],
     cursor: 0,
     title: '',

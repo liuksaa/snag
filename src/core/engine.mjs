@@ -116,6 +116,11 @@ export async function findFfmpeg(onStatus, signal) {
 }
 
 /** Ask yt-dlp for everything it knows about a url. */
+/**
+ * @param {string} ytdlp
+ * @param {string} url
+ * @param {{signal?: AbortSignal, browser?: string}} [opts]
+ */
 export async function probe(ytdlp, url, {signal, browser} = {}) {
   const args = ['-J', '--no-playlist', '--no-warnings']
   if (browser) args.push('--cookies-from-browser', browser)
@@ -153,6 +158,11 @@ process.on('exit', () => running?.kill('SIGTERM'))
  * Download one choice. `onProgress` fires with {done,total,speed,eta,part,parts};
  * `onStage` fires when yt-dlp switches to merging or extracting audio.
  * Resolves with the final file path.
+ *
+ * @param {import('../types.mjs').DownloadRequest} request
+ * @param {Partial<import('../types.mjs').Report>} [report]
+ * @param {AbortSignal} [signal]
+ * @returns {Promise<string>}
  */
 export function download({ytdlp, url, cache, choice, outDir, browser, ffmpeg}, {onProgress, onStage} = {}, signal) {
   const args = [

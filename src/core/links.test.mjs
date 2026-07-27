@@ -55,7 +55,7 @@ test('rejects things that are not links', () => {
 
 test('says plainly that Threads is not supported, before any network call', () => {
   const url = 'https://www.threads.com/@oz.apps/post/Da8acJOiE7c?xmt=AQG0Qu8&source_surface=35'
-  const advice = adviseBeforeTrying(url)
+  const advice = adviseBeforeTrying(url) ?? ''
   assert.match(advice, /Threads is not supported/)
   assert.match(advice, /Instagram/) // offers the way round it
   assert.equal(adviseBeforeTrying('https://www.threads.net/@a/post/b'), advice)

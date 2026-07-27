@@ -13,7 +13,12 @@ export const toRgb = h => {
   const n = Number.parseInt(h.slice(1), 16)
   return [(n >> 16) & 255, (n >> 8) & 255, n & 255]
 }
-export const ink = h => rgb(...toRgb(h))
+/**
+ * Paint with a palette value. A hex string is an exact colour; a raw escape is
+ * passed through (the auto theme uses those to borrow the terminal's own
+ * colours); empty means "whatever the terminal already uses".
+ */
+export const ink = c => (!c ? '' : c.startsWith('#') ? rgb(...toRgb(c)) : c)
 export const inkBg = h => rgbBg(...toRgb(h))
 export const blend = (a, b, t) => a.map((v, i) => Math.round(v + (b[i] - v) * t))
 
@@ -27,15 +32,33 @@ export function aurora(t) {
   return blend(AURORA[i], AURORA[i + 1] ?? AURORA[i], p - i)
 }
 
-/** The quiet palette everything non-accent uses. */
-export const SHADE = {
-  bright: '#EDEAE4',
-  text: '#C8C5BF',
-  soft: '#8A8F98',
-  faint: '#5A6068',
-  rule: '#2E3238',
-  ok: '#4ADE80',
+// The aurora ramp is the brand and never changes. Everything else adapts, so
+// snag is legible on a light terminal as well as a dark one.
+const PALETTES = {
+  // borrow the terminal's own foreground: correct on any theme, including ones
+  // neither "light" nor "dark" describes properly
+  auto: {bright: '', text: '', soft: '\x1b[90m', faint: '\x1b[90m', rule: '\x1b[90m', ok: '\x1b[32m'},
+  light: {bright: '#14161A', text: '#31353B', soft: '#5C6168', faint: '#878D95', rule: '#C7CCD3', ok: '#15803D'},
+  dark: {bright: '#EDEAE4', text: '#C8C5BF', soft: '#8A8F98', faint: '#5A6068', rule: '#2E3238', ok: '#4ADE80'},
 }
+
+export const THEMES = Object.keys(PALETTES)
+
+/**
+ * Mutated in place rather than replaced, because every view reads SHADE.x at
+ * render time — so changing theme repaints without rewiring anything.
+ */
+export const SHADE = {...PALETTES.auto}
+
+let theme = 'auto'
+export const currentTheme = () => theme
+export function setTheme(name) {
+  if (!PALETTES[name]) return theme
+  theme = name
+  Object.assign(SHADE, PALETTES[name])
+  return theme
+}
+export const nextTheme = () => setTheme(THEMES[(THEMES.indexOf(theme) + 1) % THEMES.length])
 
 // How many terminal columns a character occupies. Most take one, but CJK and
 // emoji take two, and combining marks take none — so a Japanese video title

@@ -47,6 +47,24 @@ again. Files land in `~/Downloads`, and snag says where.
 Press a number on the home screen to grab one of your recent links again.
 `esc` goes back, `^c` quits.
 
+| key | what it does |
+| --- | --- |
+| `↵` | snag the link |
+| `1`–`5` | re-snag a recent link |
+| `↑` `↓` | move through the quality list |
+| `^t` | theme: auto, light, dark |
+| `^l` | language |
+| `esc` | back or cancel |
+| `^c` | quit |
+
+## Themes
+
+`^t` cycles **auto**, **light** and **dark**, and remembers your choice.
+
+`auto` is the default and usually the right one: it paints with your
+terminal's own colours, so snag matches whatever theme you already use. Pick
+`light` or `dark` if you want snag to look the same everywhere regardless.
+
 ## The quality picker tells you what will actually play
 
 Apple's players (QuickTime, Preview, Photos, Messages) can only decode H.264

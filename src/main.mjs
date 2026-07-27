@@ -14,6 +14,7 @@ import {adviseBeforeTrying, explain, looksLikeUrl, siteName} from './core/links.
 import {loadRecent, remember} from './core/recent.mjs'
 import {LANGUAGES, LANGUAGE_NAMES, detectLanguage, language, setLanguage, t} from './i18n.mjs'
 import {loadSettings, saveSetting} from './core/settings.mjs'
+import {currentTheme, nextTheme, setTheme} from './paint.mjs'
 import {readClipboard} from './core/clipboard.mjs'
 
 const SAVE_TO = path.join(os.homedir(), 'Downloads')
@@ -31,7 +32,9 @@ const hintsFor = at =>
 
 export async function start({url: initialUrl} = {}) {
   const screen = new Screen()
-  setLanguage(detectLanguage(process.env, loadSettings().language))
+  const saved = loadSettings()
+  setLanguage(detectLanguage(process.env, saved.language))
+  setTheme(saved.theme ?? 'auto')
 
   const state = {
     at: 'home',
@@ -56,6 +59,7 @@ export async function start({url: initialUrl} = {}) {
     error: '',
     options: LANGUAGES.map(code => ({code, name: LANGUAGE_NAMES[code]})),
     cameFrom: 'home',
+    suggested: false,
   }
 
   let ytdlp = ''
@@ -76,6 +80,7 @@ export async function start({url: initialUrl} = {}) {
       input: '',
       url: '',
       notice,
+      suggested: false,
       menu: [],
       cursor: 0,
       title: '',
@@ -247,6 +252,11 @@ export async function start({url: initialUrl} = {}) {
   }
 
   const onKey = key => {
+    if (key === '\x14') {
+      // ^t — auto, light, dark
+      saveSetting('theme', nextTheme())
+      return
+    }
     if (key === '\x0c' && state.at !== 'languages') {
       // ^l opens the language list rather than cycling blindly through eleven
       state.cameFrom = state.at
@@ -283,6 +293,7 @@ export async function start({url: initialUrl} = {}) {
       if (key === KEY.enter) return submit(state.input)
       if (key === KEY.backspace) {
         state.input = [...state.input].slice(0, -1).join('')
+        state.suggested = false
         state.notice = ''
         return
       }
@@ -290,14 +301,17 @@ export async function start({url: initialUrl} = {}) {
         state.input = ''
         return
       }
-      // a bare number picks a recent link, but only when nothing is typed
-      if (!state.input && /^[1-9]$/.test(key)) {
+      // a bare number picks a recent link. This must also work when the field
+      // holds an unmodified clipboard suggestion, or the list says "press its
+      // number" while the number just types itself into the box.
+      if ((!state.input || state.suggested) && /^[1-9]$/.test(key)) {
         const pick = state.recent[Number(key) - 1]
         if (pick) return submit(pick)
         return
       }
       if (key >= ' ' && !key.startsWith('\x1b')) {
         state.input += key
+        state.suggested = false
         state.notice = ''
         // a pasted url is unambiguous — go straight in
         if (key.length > 8 && looksLikeUrl(state.input)) submit(state.input)
@@ -317,7 +331,7 @@ export async function start({url: initialUrl} = {}) {
 
   screen.open((frame, size) => {
     const body = view[state.at === 'home' ? 'home' : state.at](state, frame, size)
-    return [...body, '', '', hints([...hintsFor(state.at), ['^l', LANGUAGE_NAMES[language()]]], size.cols)]
+    return [...body, '', '', hints([...hintsFor(state.at), ['^l', LANGUAGE_NAMES[language()]], ['^t', currentTheme()]], size.cols)]
   }, onKey)
 
   // launching with a url, or with one already on the clipboard, skips the typing
@@ -326,6 +340,7 @@ export async function start({url: initialUrl} = {}) {
     const clip = await readClipboard()
     if (clip && looksLikeUrl(clip)) {
       state.input = clip
+      state.suggested = true // untouched, so number keys still reach the recent list
       screen.draw()
     }
   }

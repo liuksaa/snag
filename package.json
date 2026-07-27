@@ -1,0 +1,35 @@
+{
+  "name": "snag",
+  "version": "1.0.0",
+  "description": "snag any video from YouTube, Instagram, X, TikTok and 1800+ sites, from your terminal. paste, snag, done.",
+  "type": "module",
+  "bin": {
+    "snag": "bin/snag.mjs"
+  },
+  "files": [
+    "bin",
+    "src"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "start": "node bin/snag.mjs",
+    "test": "node --test src/",
+    "vibe": "node vibe.mjs"
+  },
+  "author": "Lucky",
+  "license": "MIT",
+  "keywords": [
+    "snag",
+    "video",
+    "downloader",
+    "yt-dlp",
+    "youtube",
+    "instagram",
+    "tiktok",
+    "cli",
+    "tui",
+    "terminal"
+  ]
+}

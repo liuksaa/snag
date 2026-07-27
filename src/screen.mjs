@@ -65,8 +65,12 @@ export class Screen {
     const size = this.size
     const lines = this.#render(this.#frame, size)
     const top = Math.max(0, Math.floor((size.rows - lines.length) / 2))
-    let buf = '\x1b[H' // home, then overwrite — no full clear, so no flicker
-    buf += '\n'.repeat(top)
+    // Overwrite in place rather than clearing first, so there is no flicker.
+    // Every row we pass over must erase itself: a bare newline moves the cursor
+    // without wiping the row, so when a taller screen replaces a shorter one the
+    // old rows survive above the new content as stray lines.
+    let buf = '\x1b[H'
+    buf += '\x1b[K\n'.repeat(top)
     buf += lines.map(l => l + '\x1b[K').join('\n')
     buf += RESET + '\x1b[J'
     out(buf)

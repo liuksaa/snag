@@ -3,31 +3,14 @@
 
 import {RESET, aurora, blend, centre, ink, rgb, SHADE} from './paint.mjs'
 
-// Drawn from a solid 5x7 face rather than a figlet "shadow" font: those spell
-// their drop shadow with ╗╝║═, which at terminal contrast reads as stray lines
-// around the letters instead of depth. Solid blocks only.
-const FACE = {
-  s: ['01110', '10001', '10000', '01110', '00001', '10001', '01110'],
-  n: ['10001', '11001', '11001', '10101', '10011', '10011', '10001'],
-  a: ['01110', '10001', '10001', '11111', '10001', '10001', '10001'],
-  g: ['01110', '10001', '10000', '10111', '10001', '10001', '01110'],
-}
-const WIDE = 2 // cells per pixel — terminal cells are tall, so 2 reads square
-const SPACE = 1 // pixel columns between letters
-
-const ART = (() => {
-  const rows = []
-  for (let y = 0; y < 7; y++) {
-    let line = ''
-    for (const letter of 'snag') {
-      for (const bit of FACE[letter][y]) line += (bit === '1' ? '█' : ' ').repeat(WIDE)
-      line += ' '.repeat(SPACE * WIDE)
-    }
-    rows.push(line.slice(0, -SPACE * WIDE)) // drop the trailing letter gap
-  }
-  return rows
-})()
-
+const ART = [
+  '███████╗███╗   ██╗ █████╗  ██████╗ ',
+  '██╔════╝████╗  ██║██╔══██╗██╔════╝ ',
+  '███████╗██╔██╗ ██║███████║██║  ███╗',
+  '╚════██║██║╚██╗██║██╔══██║██║   ██║',
+  '███████║██║ ╚████║██║  ██║╚██████╔╝',
+  '╚══════╝╚═╝  ╚═══╝╚═╝  ╚═╝ ╚═════╝ ',
+]
 const ROWS = ART.length
 const COLS = ART[0].length
 

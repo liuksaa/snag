@@ -76,10 +76,43 @@ export async function findYtDlp(onStatus, signal) {
   return local
 }
 
-/** ffmpeg merges split streams and extracts mp3. Undefined = let yt-dlp look. */
-export async function findFfmpeg() {
-  if (await works('ffmpeg', ['-version'])) return undefined
-  return undefined
+const FFMPEG_RELEASE = 'https://github.com/eugeneware/ffmpeg-static/releases/latest/download'
+
+/**
+ * ffmpeg is not optional: without it yt-dlp cannot join a separate video and
+ * audio stream (so a 1080p grab lands as two unplayable files) and cannot make
+ * an mp3 at all. Rather than making people install it first, fetch a static
+ * build once, the same way we fetch yt-dlp. Returns a path to pass to
+ * --ffmpeg-location, or undefined when the system already has one on PATH.
+ */
+export async function findFfmpeg(onStatus, signal) {
+  if (await works('ffmpeg', ['-version'])) return undefined // yt-dlp will find it itself
+
+  const local = path.join(BIN_DIR, process.platform === 'win32' ? 'ffmpeg.exe' : 'ffmpeg')
+  if (await works(local, ['-version'])) return local
+
+  await fs.mkdir(BIN_DIR, {recursive: true})
+  const url = `${FFMPEG_RELEASE}/ffmpeg-${process.platform}-${process.arch}`
+  const res = await fetch(url, {signal})
+  if (!res.ok || !res.body) throw new Error(`Could not fetch ffmpeg (${res.status}). Install ffmpeg and try again.`)
+
+  const expected = Number(res.headers.get('content-length')) || 0
+  let got = 0
+  let shown = -1
+  const tmp = `${local}.part`
+  const body = Readable.fromWeb(res.body)
+  body.on('data', chunk => {
+    got += chunk.length
+    // only speak when the number changes, or a 45 MB fetch repaints thousands of times
+    const pct = expected ? Math.round((got / expected) * 100) : -1
+    if (pct === shown) return
+    shown = pct
+    onStatus?.(pct < 0 ? 'first run: fetching ffmpeg…' : `first run: fetching ffmpeg ${pct}%`)
+  })
+  await pipeline(body, createWriteStream(tmp), {signal})
+  await fs.chmod(tmp, 0o755)
+  await fs.rename(tmp, local)
+  return local
 }
 
 /** Ask yt-dlp for everything it knows about a url. */
@@ -121,7 +154,7 @@ process.on('exit', () => running?.kill('SIGTERM'))
  * `onStage` fires when yt-dlp switches to merging or extracting audio.
  * Resolves with the final file path.
  */
-export function download({ytdlp, url, cache, choice, outDir, browser}, {onProgress, onStage} = {}, signal) {
+export function download({ytdlp, url, cache, choice, outDir, browser, ffmpeg}, {onProgress, onStage} = {}, signal) {
   const args = [
     ...(cache ? ['--load-info-json', cache] : [url]),
     ...choice.args,
@@ -139,6 +172,7 @@ export function download({ytdlp, url, cache, choice, outDir, browser}, {onProgre
     path.join(outDir, '%(title).70s.%(ext)s'),
   ]
   if (browser) args.push('--cookies-from-browser', browser)
+  if (ffmpeg) args.push('--ffmpeg-location', ffmpeg)
 
   return new Promise((resolve, reject) => {
     const child = spawn(ytdlp, args, {signal})

@@ -133,7 +133,10 @@ export function downloading(state, frame, size) {
     .filter(Boolean)
     .join('   ')
 
-  const label = state.stage === 'merging' ? 'merging video and audio…' : state.stage === 'extracting' ? 'extracting audio…' : ''
+  // known stages get friendlier words; anything else (a one-time tool fetch)
+  // is already human-readable and shown as-is
+  const STAGES = {merging: 'merging video and audio…', extracting: 'extracting audio…'}
+  const label = state.stage ? (STAGES[state.stage] ?? state.stage) : ''
 
   return shell(frame, size, [
     centre(ink(SHADE.text) + clip(state.title || tidyLink(state.url), 52) + RESET, size.cols),

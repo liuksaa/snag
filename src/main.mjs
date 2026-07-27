@@ -161,14 +161,21 @@ export async function start({url: initialUrl} = {}) {
       },
     }
 
-    const base = {
-      ytdlp,
-      url: state.url,
-      choice,
-      outDir: SAVE_TO,
-      browser,
-      ffmpeg: await findFfmpeg(),
+    let ffmpeg
+    try {
+      // one-time on a machine without ffmpeg; the status keeps it from looking stuck
+      ffmpeg = await findFfmpeg(note => {
+        state.stage = note
+        screen.draw()
+      }, controller.signal)
+      state.stage = ''
+    } catch (err) {
+      if (controller.signal.aborted) return
+      state.error = err?.message ?? String(err)
+      return go('failed')
     }
+
+    const base = {ytdlp, url: state.url, choice, outDir: SAVE_TO, browser, ffmpeg}
 
     try {
       let file

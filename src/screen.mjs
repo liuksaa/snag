@@ -70,22 +70,23 @@ export class Screen {
     // is active at the time. The auto theme sets none and keeps the terminal's.
     const page = SHADE.page ? inkBg(SHADE.page) : ''
 
-    // Overwrite in place rather than clearing first, so there is no flicker.
-    // Every row we pass over must erase itself: a bare newline moves the cursor
-    // without wiping the row, so when a taller screen replaces a shorter one the
-    // old rows survive above the new content as stray lines.
-    let buf = '\x1b[H' + page
-    buf += '\x1b[K\n'.repeat(top)
-    buf += lines
-      .map(l => {
-        // Views end (and sometimes interrupt) their lines with a full reset,
-        // which drops the background as well as the colour. Restoring it after
-        // every reset is what stops the surface banding into stripes.
-        const kept = page ? l.replaceAll(RESET, RESET + page) : l
-        return page + kept + page + '\x1b[K'
-      })
-      .join('\n')
-    buf += page + '\x1b[J' + RESET
+    // Every row is addressed explicitly and erased from column 1, rather than
+    // walking down with newlines. In raw mode a newline is not guaranteed to
+    // return the cursor to the left margin, so a row erased from wherever the
+    // cursor happened to sit left its left-hand side unpainted — which showed
+    // up as stripes down the side of a themed screen.
+    //
+    // Overwriting in place (rather than clearing the screen first) is what
+    // keeps the redraw flicker-free.
+    let buf = ''
+    for (let row = 0; row < size.rows; row++) {
+      const line = lines[row - top]
+      // views end, and sometimes interrupt, their lines with a full reset,
+      // which drops the background along with the colour
+      const body = line === undefined ? '' : page ? line.replaceAll(RESET, RESET + page) : line
+      buf += `\x1b[${row + 1};1H` + page + '\x1b[K' + body
+    }
+    buf += RESET
     out(buf)
   }
 

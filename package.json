@@ -1,7 +1,7 @@
 {
   "name": "snag",
   "version": "1.0.0",
-  "description": "snag any video from YouTube, Instagram, X, TikTok and 1800+ sites, from your terminal. paste, snag, done.",
+  "description": "snag any video from YouTube, Instagram, X, TikTok, Reddit and 1700+ sites, from your terminal. paste, snag, done.",
   "type": "module",
   "bin": {
     "snag": "bin/snag.mjs"

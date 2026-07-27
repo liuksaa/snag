@@ -28,9 +28,10 @@ npm link
 
 That's it. `snag` now works from any folder.
 
-**No other setup.** snag fetches the two tools it needs (yt-dlp and ffmpeg) by
-itself the first time it needs them, into `~/.snag/bin`. You never install them,
-and if you already have them, snag uses yours instead of downloading anything.
+**No other setup.** Under the hood snag uses two tools, yt-dlp and ffmpeg, but
+you do not have to install either one. The first time snag needs a tool it
+downloads it for you into `~/.snag/bin` (around 45 MB, once). If you already
+have them on your system, snag uses those and downloads nothing.
 
 ## Use it
 

@@ -164,27 +164,30 @@ Done:
 - [x] Themes, languages, and both remembered between runs
 - [x] Plain-English failures instead of extractor stack traces
 
-Next, roughly in order of how much they would be missed:
+Planned:
 
-- [ ] `--best` and `--mp3` to skip the picker, so snag can be used in a script
+- [ ] Verify on Windows. The code paths are written but have never been run
+      there, so for now the only honest claim is macOS and Linux
+- [ ] `--best` and `--mp3` to skip the picker, so snag can be driven by a script
 - [ ] `-o <dir>` to save somewhere other than `~/Downloads`
-- [ ] Subtitles: fetch them alongside the video, or on their own
-- [ ] Resume a download that was interrupted rather than starting over
-- [ ] Keep the bundled yt-dlp current, since sites break it regularly
 - [ ] Playlists, and posts that hold more than one video
+- [ ] Keep the bundled yt-dlp current, since sites break it regularly and a
+      stale copy fails in ways that look like snag's fault
+- [ ] Translate the diagnostics, not only the interface. Being told what went
+      wrong matters more than the label on a button
+- [ ] Right-to-left languages. Arabic and Hebrew need real layout work rather
+      than another translation table, which is why they are not in the eleven
 
 Ideas, not commitments:
 
+- [ ] Subtitles, alongside the video or on their own
+- [ ] Resume an interrupted download rather than starting it again
 - [ ] Offer to re-encode when a site has no H.264 at the resolution you want.
-      Would guarantee a file that opens anywhere, at the cost of a slow,
+      Would guarantee a file that opens anywhere, at the cost of a slow and
       slightly lossy conversion
 - [ ] Show the video's thumbnail in terminals that can draw images
       (Ghostty, iTerm2, Kitty), so you see what you are about to take
-- [ ] Translate the diagnostics, not just the interface
-- [ ] Right-to-left languages, which need real layout work rather than
-      another translation table
-- [ ] Verify on Windows; the code paths exist but have never been run there
-- [ ] Publish to npm, if this is ever made public
+- [ ] Publish to npm, so installing is one command
 
 ## A note on fair use
 

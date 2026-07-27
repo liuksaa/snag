@@ -40,7 +40,7 @@ const PALETTES = {
   // `page` paints the whole screen. auto leaves it alone so snag sits on the
   // terminal's own background; light and dark take the surface over completely.
   auto: {page: '', bright: '', text: '', soft: '\x1b[90m', faint: '\x1b[90m', rule: '\x1b[90m', ok: '\x1b[32m'},
-  light: {page: '#F7F5F1', bright: '#14161A', text: '#31353B', soft: '#5C6168', faint: '#878D95', rule: '#C7CCD3', ok: '#15803D'},
+  light: {page: '#FFFFFF', bright: '#111316', text: '#2B2F35', soft: '#585E66', faint: '#8992A0', rule: '#D6DBE2', ok: '#15803D'},
   dark: {page: '#14161A', bright: '#EDEAE4', text: '#C8C5BF', soft: '#8A8F98', faint: '#5A6068', rule: '#2E3238', ok: '#4ADE80'},
 }
 

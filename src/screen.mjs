@@ -2,7 +2,7 @@
 // loop. Views stay pure (state in, array-of-lines out); this is the only place
 // that talks to stdout.
 
-import {RESET} from './paint.mjs'
+import {RESET, SHADE, inkBg} from './paint.mjs'
 
 const out = s => process.stdout.write(s)
 
@@ -65,14 +65,19 @@ export class Screen {
     const size = this.size
     const lines = this.#render(this.#frame, size)
     const top = Math.max(0, Math.floor((size.rows - lines.length) / 2))
+    // A theme paints the whole surface, not just the text: the background is set
+    // before every erase, because \x1b[K and \x1b[J clear using the colour that
+    // is active at the time. The auto theme sets none and keeps the terminal's.
+    const page = SHADE.page ? inkBg(SHADE.page) : ''
+
     // Overwrite in place rather than clearing first, so there is no flicker.
     // Every row we pass over must erase itself: a bare newline moves the cursor
     // without wiping the row, so when a taller screen replaces a shorter one the
     // old rows survive above the new content as stray lines.
-    let buf = '\x1b[H'
+    let buf = '\x1b[H' + page
     buf += '\x1b[K\n'.repeat(top)
-    buf += lines.map(l => l + '\x1b[K').join('\n')
-    buf += RESET + '\x1b[J'
+    buf += lines.map(l => page + l + page + '\x1b[K').join('\n')
+    buf += page + '\x1b[J' + RESET
     out(buf)
   }
 

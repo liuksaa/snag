@@ -16,7 +16,8 @@
   "scripts": {
     "start": "node bin/snag.mjs",
     "test": "node --test src/",
-    "vibe": "node vibe.mjs"
+    "vibe": "node vibe.mjs",
+    "keys": "node keys.mjs"
   },
   "author": "Lucky",
   "license": "MIT",

@@ -37,9 +37,11 @@ export function aurora(t) {
 const PALETTES = {
   // borrow the terminal's own foreground: correct on any theme, including ones
   // neither "light" nor "dark" describes properly
-  auto: {bright: '', text: '', soft: '\x1b[90m', faint: '\x1b[90m', rule: '\x1b[90m', ok: '\x1b[32m'},
-  light: {bright: '#14161A', text: '#31353B', soft: '#5C6168', faint: '#878D95', rule: '#C7CCD3', ok: '#15803D'},
-  dark: {bright: '#EDEAE4', text: '#C8C5BF', soft: '#8A8F98', faint: '#5A6068', rule: '#2E3238', ok: '#4ADE80'},
+  // `page` paints the whole screen. auto leaves it alone so snag sits on the
+  // terminal's own background; light and dark take the surface over completely.
+  auto: {page: '', bright: '', text: '', soft: '\x1b[90m', faint: '\x1b[90m', rule: '\x1b[90m', ok: '\x1b[32m'},
+  light: {page: '#F7F5F1', bright: '#14161A', text: '#31353B', soft: '#5C6168', faint: '#878D95', rule: '#C7CCD3', ok: '#15803D'},
+  dark: {page: '#14161A', bright: '#EDEAE4', text: '#C8C5BF', soft: '#8A8F98', faint: '#5A6068', rule: '#2E3238', ok: '#4ADE80'},
 }
 
 export const THEMES = Object.keys(PALETTES)

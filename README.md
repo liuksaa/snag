@@ -6,7 +6,7 @@ Download videos from YouTube, Instagram, X, TikTok, Reddit and 1,700+ other
 sites, from your terminal. Paste a link, pick a quality, done. No popups, no
 fake download buttons, no sketchy redirects.
 
-<img src="assets/home.png" alt="snag's home screen: the wordmark, a link field, and your recent downloads numbered for one-key access" width="100%">
+<img src="assets/home.png" alt="snag's home screen: the wordmark, the tagline, and a link field waiting for a paste" width="100%">
 
 ## Install
 

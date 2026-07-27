@@ -15,6 +15,7 @@ import {loadRecent, remember} from './core/recent.mjs'
 import {LANGUAGES, LANGUAGE_NAMES, detectLanguage, language, setLanguage, t} from './i18n.mjs'
 import {loadSettings, saveSetting} from './core/settings.mjs'
 import {currentTheme, nextTheme, setTheme} from './paint.mjs'
+import {replayLogo} from './logo.mjs'
 import {readClipboard} from './core/clipboard.mjs'
 
 const SAVE_TO = path.join(os.homedir(), 'Downloads')
@@ -255,6 +256,7 @@ export async function start({url: initialUrl} = {}) {
     if (key === '\x14') {
       // ^t — auto, light, dark
       saveSetting('theme', nextTheme())
+      replayLogo(screen.frame)
       return
     }
     if (key === '\x0c' && state.at !== 'languages') {
@@ -274,6 +276,7 @@ export async function start({url: initialUrl} = {}) {
         // remembered, so it is still your language next time you open snag
         setLanguage(state.options[state.cursor].code)
         saveSetting('language', language())
+        replayLogo(screen.frame)
         state.cursor = 0
         return go(state.cameFrom === 'languages' ? 'home' : state.cameFrom)
       }

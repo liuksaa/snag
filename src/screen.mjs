@@ -76,7 +76,15 @@ export class Screen {
     // old rows survive above the new content as stray lines.
     let buf = '\x1b[H' + page
     buf += '\x1b[K\n'.repeat(top)
-    buf += lines.map(l => page + l + page + '\x1b[K').join('\n')
+    buf += lines
+      .map(l => {
+        // Views end (and sometimes interrupt) their lines with a full reset,
+        // which drops the background as well as the colour. Restoring it after
+        // every reset is what stops the surface banding into stripes.
+        const kept = page ? l.replaceAll(RESET, RESET + page) : l
+        return page + kept + page + '\x1b[K'
+      })
+      .join('\n')
     buf += page + '\x1b[J' + RESET
     out(buf)
   }

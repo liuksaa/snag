@@ -22,13 +22,21 @@ const TRAVEL = 46 // frames the sweep takes to cross
 
 const ease = t => 1 - (1 - t) ** 3
 
+// The sweep normally runs on its own slow cycle. Changing the look of the app
+// is worth acknowledging, so the light can be sent across the letters again on
+// demand: it reads as the wordmark repainting itself in the new colours.
+let origin = 0
+export const replayLogo = frame => {
+  origin = frame
+}
+
 /**
  * @param {number} frame
  * @param {number} cols terminal width, for centring
  * @param {boolean} animate false renders the resting state (non-TTY, tests)
  */
 export function logo(frame, cols, animate = true) {
-  const phase = animate ? frame % PERIOD : PERIOD - 1
+  const phase = animate ? Math.max(0, frame - origin) % PERIOD : PERIOD - 1
   const sweeping = phase < TRAVEL
   // beam position runs off-screen at both ends so it enters and exits cleanly
   const beam = sweeping ? -LEAN * ROWS - HALF + ease(phase / TRAVEL) * (COLS + LEAN * ROWS + HALF * 2) : null

@@ -1,0 +1,387 @@
+// i18n.mjs — snag speaks the language your system is set to.
+//
+// Picked up from the usual environment variables, overridable with SNAG_LANG,
+// and cycled in-app with ^l. Anything missing in a translation falls back to
+// English rather than showing a blank, so a partial translation is still useful.
+
+const EN = {
+  tagline: 'snag any video. paste. snag. done.',
+  sites: 'youtube · instagram · x · tiktok · reddit · +1700 more',
+  pasteLink: 'paste a link',
+  snag: 'snag',
+  recent: 'recent, press its number',
+  lookingUp: 'looking it up…',
+  usingLogin: 'using your {browser} login…',
+  fetchingTool: 'first run: fetching {tool}',
+  merging: 'merging video and audio…',
+  extracting: 'extracting audio…',
+  snagged: 'snagged',
+  another: 'another',
+  pressForAnother: 'press ↵ for another',
+  tryAgain: 'try again',
+  quit: 'quit',
+  cancel: 'cancel',
+  choose: 'choose',
+  back: 'back',
+  audioOnly: 'audio only',
+  bestAvailable: 'best available',
+  playsAnywhere: 'plays anywhere',
+  needsVlc: 'needs VLC',
+  part: 'part {n}/{total}',
+  ofSize: '{done} of {total}',
+  timeLeft: '{time} left',
+  notALink: 'That does not look like a link. Paste a full address.',
+  language: 'language',
+}
+
+// Only the strings a speaker would actually notice. Product words that read the
+// same everywhere (snag, VLC) stay put on purpose.
+const TRANSLATIONS = {
+  en: EN,
+
+  hi: {
+    tagline: 'कोई भी वीडियो सहेजें। पेस्ट करें। सहेजें। हो गया।',
+    pasteLink: 'लिंक पेस्ट करें',
+    snag: 'सहेजें',
+    recent: 'हाल के, नंबर दबाएँ',
+    lookingUp: 'देखा जा रहा है…',
+    usingLogin: 'आपके {browser} लॉगिन से…',
+    fetchingTool: 'पहली बार: {tool} लाया जा रहा है',
+    merging: 'वीडियो और ऑडियो जोड़ा जा रहा है…',
+    extracting: 'ऑडियो निकाला जा रहा है…',
+    snagged: 'सहेज लिया',
+    another: 'दूसरा',
+    pressForAnother: 'दूसरे के लिए ↵ दबाएँ',
+    tryAgain: 'फिर कोशिश करें',
+    quit: 'बंद करें',
+    cancel: 'रद्द करें',
+    choose: 'चुनें',
+    back: 'वापस',
+    audioOnly: 'केवल ऑडियो',
+    bestAvailable: 'सर्वोत्तम उपलब्ध',
+    playsAnywhere: 'कहीं भी चलेगा',
+    needsVlc: 'VLC चाहिए',
+    part: 'भाग {n}/{total}',
+    ofSize: '{total} में से {done}',
+    timeLeft: '{time} बाकी',
+    notALink: 'यह लिंक नहीं लगता। पूरा पता पेस्ट करें।',
+    language: 'भाषा',
+  },
+
+  es: {
+    tagline: 'guarda cualquier vídeo. pega. guarda. listo.',
+    pasteLink: 'pega un enlace',
+    snag: 'guardar',
+    recent: 'recientes, pulsa su número',
+    lookingUp: 'buscando…',
+    usingLogin: 'usando tu sesión de {browser}…',
+    fetchingTool: 'primera vez: descargando {tool}',
+    merging: 'uniendo vídeo y audio…',
+    extracting: 'extrayendo audio…',
+    snagged: 'guardado',
+    another: 'otro',
+    pressForAnother: 'pulsa ↵ para otro',
+    tryAgain: 'reintentar',
+    quit: 'salir',
+    cancel: 'cancelar',
+    choose: 'elegir',
+    back: 'volver',
+    audioOnly: 'solo audio',
+    bestAvailable: 'mejor disponible',
+    playsAnywhere: 'se ve en todas partes',
+    needsVlc: 'necesita VLC',
+    part: 'parte {n}/{total}',
+    ofSize: '{done} de {total}',
+    timeLeft: 'quedan {time}',
+    notALink: 'Eso no parece un enlace. Pega una dirección completa.',
+    language: 'idioma',
+  },
+
+  pt: {
+    tagline: 'salve qualquer vídeo. cole. salve. pronto.',
+    pasteLink: 'cole um link',
+    snag: 'salvar',
+    recent: 'recentes, aperte o número',
+    lookingUp: 'procurando…',
+    usingLogin: 'usando seu login do {browser}…',
+    fetchingTool: 'primeira vez: baixando {tool}',
+    merging: 'juntando vídeo e áudio…',
+    extracting: 'extraindo áudio…',
+    snagged: 'salvo',
+    another: 'outro',
+    pressForAnother: 'aperte ↵ para outro',
+    tryAgain: 'tentar de novo',
+    quit: 'sair',
+    cancel: 'cancelar',
+    choose: 'escolher',
+    back: 'voltar',
+    audioOnly: 'só áudio',
+    bestAvailable: 'melhor disponível',
+    playsAnywhere: 'toca em qualquer lugar',
+    needsVlc: 'precisa do VLC',
+    part: 'parte {n}/{total}',
+    ofSize: '{done} de {total}',
+    timeLeft: 'faltam {time}',
+    notALink: 'Isso não parece um link. Cole um endereço completo.',
+    language: 'idioma',
+  },
+
+  fr: {
+    tagline: 'récupérez toute vidéo. collez. récupérez. voilà.',
+    pasteLink: 'collez un lien',
+    snag: 'récupérer',
+    recent: 'récents, tapez le numéro',
+    lookingUp: 'recherche…',
+    usingLogin: 'via votre session {browser}…',
+    fetchingTool: 'première fois : téléchargement de {tool}',
+    merging: 'assemblage vidéo et audio…',
+    extracting: 'extraction de l’audio…',
+    snagged: 'récupéré',
+    another: 'un autre',
+    pressForAnother: 'appuyez sur ↵ pour un autre',
+    tryAgain: 'réessayer',
+    quit: 'quitter',
+    cancel: 'annuler',
+    choose: 'choisir',
+    back: 'retour',
+    audioOnly: 'audio seul',
+    bestAvailable: 'meilleur disponible',
+    playsAnywhere: 'se lit partout',
+    needsVlc: 'nécessite VLC',
+    part: 'partie {n}/{total}',
+    ofSize: '{done} sur {total}',
+    timeLeft: '{time} restant',
+    notALink: 'Cela ne ressemble pas à un lien. Collez une adresse complète.',
+    language: 'langue',
+  },
+
+  de: {
+    tagline: 'jedes Video sichern. einfügen. sichern. fertig.',
+    pasteLink: 'Link einfügen',
+    snag: 'sichern',
+    recent: 'zuletzt, Nummer drücken',
+    lookingUp: 'wird gesucht…',
+    usingLogin: 'mit deiner {browser}-Anmeldung…',
+    fetchingTool: 'erster Start: {tool} wird geladen',
+    merging: 'Video und Ton werden verbunden…',
+    extracting: 'Ton wird extrahiert…',
+    snagged: 'gesichert',
+    another: 'noch eins',
+    pressForAnother: '↵ für das nächste',
+    tryAgain: 'nochmal',
+    quit: 'beenden',
+    cancel: 'abbrechen',
+    choose: 'wählen',
+    back: 'zurück',
+    audioOnly: 'nur Ton',
+    bestAvailable: 'bestes verfügbares',
+    playsAnywhere: 'läuft überall',
+    needsVlc: 'braucht VLC',
+    part: 'Teil {n}/{total}',
+    ofSize: '{done} von {total}',
+    timeLeft: 'noch {time}',
+    notALink: 'Das sieht nicht nach einem Link aus. Füge eine vollständige Adresse ein.',
+    language: 'Sprache',
+  },
+
+  ru: {
+    tagline: 'сохраните любое видео. вставьте. сохраните. готово.',
+    pasteLink: 'вставьте ссылку',
+    snag: 'сохранить',
+    recent: 'недавние, нажмите номер',
+    lookingUp: 'ищем…',
+    usingLogin: 'через ваш вход в {browser}…',
+    fetchingTool: 'первый запуск: загружаем {tool}',
+    merging: 'соединяем видео и звук…',
+    extracting: 'извлекаем звук…',
+    snagged: 'сохранено',
+    another: 'ещё',
+    pressForAnother: 'нажмите ↵ для следующего',
+    tryAgain: 'ещё раз',
+    quit: 'выход',
+    cancel: 'отмена',
+    choose: 'выбрать',
+    back: 'назад',
+    audioOnly: 'только звук',
+    bestAvailable: 'лучшее доступное',
+    playsAnywhere: 'играет везде',
+    needsVlc: 'нужен VLC',
+    part: 'часть {n}/{total}',
+    ofSize: '{done} из {total}',
+    timeLeft: 'осталось {time}',
+    notALink: 'Это не похоже на ссылку. Вставьте полный адрес.',
+    language: 'язык',
+  },
+
+  ja: {
+    tagline: 'どんな動画も保存。貼る。保存。完了。',
+    pasteLink: 'リンクを貼る',
+    snag: '保存',
+    recent: '最近の項目、番号を押す',
+    lookingUp: '確認中…',
+    usingLogin: '{browser} のログインを使用中…',
+    fetchingTool: '初回: {tool} を取得中',
+    merging: '映像と音声を結合中…',
+    extracting: '音声を抽出中…',
+    snagged: '保存しました',
+    another: 'つぎ',
+    pressForAnother: '↵ でつぎの動画',
+    tryAgain: 'やり直す',
+    quit: '終了',
+    cancel: '中止',
+    choose: '選ぶ',
+    back: '戻る',
+    audioOnly: '音声のみ',
+    bestAvailable: '利用可能な最高画質',
+    playsAnywhere: 'どこでも再生できます',
+    needsVlc: 'VLC が必要',
+    part: 'パート {n}/{total}',
+    ofSize: '{total} 中 {done}',
+    timeLeft: '残り {time}',
+    notALink: 'リンクではないようです。完全なアドレスを貼ってください。',
+    language: '言語',
+  },
+
+  zh: {
+    tagline: '保存任何视频。粘贴。保存。完成。',
+    pasteLink: '粘贴链接',
+    snag: '保存',
+    recent: '最近使用，按数字键',
+    lookingUp: '正在查找…',
+    usingLogin: '正在使用你的 {browser} 登录…',
+    fetchingTool: '首次运行：正在获取 {tool}',
+    merging: '正在合并视频和音频…',
+    extracting: '正在提取音频…',
+    snagged: '已保存',
+    another: '再来一个',
+    pressForAnother: '按 ↵ 继续下一个',
+    tryAgain: '重试',
+    quit: '退出',
+    cancel: '取消',
+    choose: '选择',
+    back: '返回',
+    audioOnly: '仅音频',
+    bestAvailable: '可用的最佳画质',
+    playsAnywhere: '随处可播放',
+    needsVlc: '需要 VLC',
+    part: '第 {n}/{total} 部分',
+    ofSize: '{done} / {total}',
+    timeLeft: '剩余 {time}',
+    notALink: '这看起来不是链接。请粘贴完整地址。',
+    language: '语言',
+  },
+
+  id: {
+    tagline: 'simpan video apa pun. tempel. simpan. selesai.',
+    pasteLink: 'tempel tautan',
+    snag: 'simpan',
+    recent: 'terbaru, tekan nomornya',
+    lookingUp: 'mencari…',
+    usingLogin: 'memakai login {browser} kamu…',
+    fetchingTool: 'pertama kali: mengunduh {tool}',
+    merging: 'menggabungkan video dan audio…',
+    extracting: 'mengambil audio…',
+    snagged: 'tersimpan',
+    another: 'lagi',
+    pressForAnother: 'tekan ↵ untuk yang lain',
+    tryAgain: 'coba lagi',
+    quit: 'keluar',
+    cancel: 'batal',
+    choose: 'pilih',
+    back: 'kembali',
+    audioOnly: 'audio saja',
+    bestAvailable: 'terbaik yang ada',
+    playsAnywhere: 'bisa diputar di mana saja',
+    needsVlc: 'butuh VLC',
+    part: 'bagian {n}/{total}',
+    ofSize: '{done} dari {total}',
+    timeLeft: 'sisa {time}',
+    notALink: 'Itu sepertinya bukan tautan. Tempel alamat lengkap.',
+    language: 'bahasa',
+  },
+
+  tr: {
+    tagline: 'her videoyu indir. yapıştır. indir. tamam.',
+    pasteLink: 'bağlantı yapıştır',
+    snag: 'indir',
+    recent: 'son kullanılanlar, numarasına bas',
+    lookingUp: 'aranıyor…',
+    usingLogin: '{browser} oturumun kullanılıyor…',
+    fetchingTool: 'ilk çalıştırma: {tool} indiriliyor',
+    merging: 'video ve ses birleştiriliyor…',
+    extracting: 'ses çıkarılıyor…',
+    snagged: 'indirildi',
+    another: 'bir tane daha',
+    pressForAnother: 'yenisi için ↵',
+    tryAgain: 'tekrar dene',
+    quit: 'çık',
+    cancel: 'iptal',
+    choose: 'seç',
+    back: 'geri',
+    audioOnly: 'sadece ses',
+    bestAvailable: 'mevcut en iyisi',
+    playsAnywhere: 'her yerde oynar',
+    needsVlc: 'VLC gerekir',
+    part: 'parça {n}/{total}',
+    ofSize: '{total} içinden {done}',
+    timeLeft: '{time} kaldı',
+    notALink: 'Bu bir bağlantıya benzemiyor. Tam adresi yapıştır.',
+    language: 'dil',
+  },
+}
+
+export const LANGUAGES = Object.keys(TRANSLATIONS)
+
+/** Human name for each, shown in its own script. */
+export const LANGUAGE_NAMES = {
+  en: 'English',
+  hi: 'हिन्दी',
+  es: 'Español',
+  pt: 'Português',
+  fr: 'Français',
+  de: 'Deutsch',
+  ru: 'Русский',
+  ja: '日本語',
+  zh: '中文',
+  id: 'Indonesia',
+  tr: 'Türkçe',
+}
+
+/** Read the system's language, e.g. "fr_FR.UTF-8" or "zh-Hans-CN" -> fr / zh. */
+export function detectLanguage(env = process.env) {
+  const pinned = env.SNAG_LANG?.trim().toLowerCase().slice(0, 2)
+  if (pinned && TRANSLATIONS[pinned]) return pinned
+
+  for (const key of ['LC_ALL', 'LC_MESSAGES', 'LANG', 'LANGUAGE']) {
+    const raw = env[key]
+    if (!raw || raw === 'C' || raw === 'POSIX') continue
+    const code = raw.toLowerCase().split(/[._:-]/)[0]
+    if (TRANSLATIONS[code]) return code
+  }
+  return 'en'
+}
+
+let current = detectLanguage()
+
+export const language = () => current
+export const setLanguage = code => {
+  if (TRANSLATIONS[code]) current = code
+  return current
+}
+/** Move to the next available language, for the in-app shortcut. */
+export const nextLanguage = () => {
+  const i = LANGUAGES.indexOf(current)
+  return setLanguage(LANGUAGES[(i + 1) % LANGUAGES.length])
+}
+
+/**
+ * Look up a phrase, filling in {placeholders}. Falls back to English for
+ * anything a translation has not covered.
+ */
+export function t(key, vars) {
+  let text = TRANSLATIONS[current]?.[key] ?? EN[key] ?? key
+  if (vars) {
+    for (const [name, value] of Object.entries(vars)) text = text.replaceAll(`{${name}}`, String(value))
+  }
+  return text
+}

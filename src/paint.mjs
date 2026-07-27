@@ -37,17 +37,49 @@ export const SHADE = {
   ok: '#4ADE80',
 }
 
-/** Visible width, ignoring escape codes — needed for any centring. */
-export const width = s => [...s.replace(/\x1b\[[0-9;]*m/g, '')].length
+// How many terminal columns a character occupies. Most take one, but CJK and
+// emoji take two, and combining marks take none — so a Japanese video title
+// counted by character length would be centred half a screen off.
+const WIDE = [
+  [0x1100, 0x115f], [0x2e80, 0x303e], [0x3041, 0x33ff], [0x3400, 0x4dbf],
+  [0x4e00, 0x9fff], [0xa000, 0xa4cf], [0xa960, 0xa97f], [0xac00, 0xd7a3],
+  [0xf900, 0xfaff], [0xfe10, 0xfe19], [0xfe30, 0xfe6f], [0xff00, 0xff60],
+  [0xffe0, 0xffe6], [0x1f300, 0x1f64f], [0x1f900, 0x1f9ff], [0x20000, 0x3fffd],
+]
+const ZERO = [[0x0300, 0x036f], [0x200b, 0x200f], [0xfe00, 0xfe0f], [0xfeff, 0xfeff]]
+const inRanges = (code, ranges) => ranges.some(([lo, hi]) => code >= lo && code <= hi)
+
+export function charWidth(ch) {
+  const code = ch.codePointAt(0)
+  if (code < 0x0300) return 1 // fast path: plain latin
+  if (inRanges(code, ZERO)) return 0
+  return inRanges(code, WIDE) ? 2 : 1
+}
+
+const strip = s => s.replace(/\x1b\[[0-9;]*m/g, '')
+
+/** Columns a string occupies once drawn, ignoring escape codes. */
+export const width = s => [...strip(s)].reduce((n, ch) => n + charWidth(ch), 0)
 
 /** Centre a (possibly coloured) string in `cols`. */
 export const centre = (s, cols) => ' '.repeat(Math.max(0, Math.floor((cols - width(s)) / 2))) + s
 
-/** Truncate to `max` visible chars, ending in an ellipsis. */
+/** Truncate to `max` COLUMNS (not characters), ending in an ellipsis. */
 export function clip(s, max) {
-  const chars = [...s]
-  return chars.length <= max ? s : chars.slice(0, Math.max(0, max - 1)).join('') + '…'
+  if (width(s) <= max) return s
+  let out = ''
+  let used = 0
+  for (const ch of s) {
+    const w = charWidth(ch)
+    if (used + w > max - 1) break
+    out += ch
+    used += w
+  }
+  return out + '…'
 }
+
+/** Pad to `cols` COLUMNS, so columns line up whatever the script. */
+export const padTo = (s, cols) => s + ' '.repeat(Math.max(0, cols - width(s)))
 
 /** Paint each character along the aurora ramp, left to right. */
 export function gradient(text, from = 0, to = 1) {

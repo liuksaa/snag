@@ -2,6 +2,7 @@
 // leans as it climbs, so the light reads as travelling across a surface.
 
 import {RESET, aurora, blend, centre, ink, rgb, SHADE} from './paint.mjs'
+import {t} from './i18n.mjs'
 
 const ART = [
   '███████╗███╗   ██╗ █████╗  ██████╗ ',
@@ -60,6 +61,6 @@ export function logo(frame, cols, animate = true) {
 // Sites named here must actually work — yt-dlp has no Threads extractor, so
 // listing it (as the tool this grew out of did) promised something it cannot do.
 export const tagline = cols => [
-  centre(ink(SHADE.text) + 'snag any video. paste. snag. done.' + RESET, cols),
-  centre(ink(SHADE.faint) + 'youtube · instagram · x · tiktok · reddit · +1700 more' + RESET, cols),
+  centre(ink(SHADE.text) + t('tagline') + RESET, cols),
+  centre(ink(SHADE.faint) + t('sites') + RESET, cols),
 ]

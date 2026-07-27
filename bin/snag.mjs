@@ -22,6 +22,10 @@ Sites that need a login (Instagram, private posts) work automatically: snag
 borrows cookies from the browser you use most. To choose one yourself:
 
   SNAG_BROWSER=brave snag        (also chrome, firefox, edge, safari)
+
+snag follows your system language. Press ^l to change it while running, or:
+
+  SNAG_LANG=es snag              en de es fr hi id ja pt ru tr zh
 `)
   process.exit(0)
 }

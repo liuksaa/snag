@@ -65,6 +65,25 @@ The ★ is the sharpest option that plays everywhere. Take it and the file just
 opens. Take a `needs VLC` one when you want maximum quality and don't mind
 using [VLC](https://www.videolan.org).
 
+## Languages
+
+snag follows whatever language your system is set to, and falls back to English
+if it has no translation for it. Press `^l` while it is running to change
+language, or pin one:
+
+```sh
+SNAG_LANG=hi snag
+```
+
+Available: English, हिन्दी, Español, Português, Français, Deutsch, Русский,
+日本語, 中文, Indonesia, Türkçe.
+
+Interface text is translated. Longer diagnostic messages (why a specific link
+failed) are still English only, and translations are welcome.
+
+Text is measured in terminal columns rather than characters, so Chinese,
+Japanese and emoji stay aligned instead of pushing the layout sideways.
+
 ## Sites that need a login
 
 Instagram and private or age-gated videos only serve video to signed-in users.

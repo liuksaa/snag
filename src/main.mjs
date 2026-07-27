@@ -12,18 +12,20 @@ import {buildMenu} from './core/formats.mjs'
 import {browsersToTry, definitelyNeedsLogin, loginAdvice, mightNeedLogin} from './core/access.mjs'
 import {adviseBeforeTrying, explain, looksLikeUrl, siteName} from './core/links.mjs'
 import {loadRecent, remember} from './core/recent.mjs'
+import {LANGUAGE_NAMES, language, nextLanguage, t} from './i18n.mjs'
 import {readClipboard} from './core/clipboard.mjs'
 
 const SAVE_TO = path.join(os.homedir(), 'Downloads')
 
-const HINTS = {
-  home: [['↵', 'snag'], ['^c', 'quit']],
-  working: [['esc', 'cancel'], ['^c', 'quit']],
-  picker: [['↑↓', 'choose'], ['↵', 'snag'], ['esc', 'back']],
-  downloading: [['esc', 'cancel']],
-  finished: [['↵', 'another'], ['^c', 'quit']],
-  failed: [['↵', 'try again'], ['^c', 'quit']],
-}
+const hintsFor = at =>
+  ({
+    home: [['↵', t('snag')], ['^c', t('quit')]],
+    working: [['esc', t('cancel')], ['^c', t('quit')]],
+    picker: [['↑↓', t('choose')], ['↵', t('snag')], ['esc', t('back')]],
+    downloading: [['esc', t('cancel')]],
+    finished: [['↵', t('another')], ['^c', t('quit')]],
+    failed: [['↵', t('tryAgain')], ['^c', t('quit')]],
+  })[at] ?? []
 
 export async function start({url: initialUrl} = {}) {
   const screen = new Screen()
@@ -91,7 +93,7 @@ export async function start({url: initialUrl} = {}) {
   async function inspect(url) {
     const controller = new AbortController()
     abort = controller
-    Object.assign(state, {url, site: siteName(url), status: 'looking it up…'})
+    Object.assign(state, {url, site: siteName(url), status: t('lookingUp')})
     go('working')
 
     try {
@@ -115,7 +117,7 @@ export async function start({url: initialUrl} = {}) {
 
         result = undefined
         for (const candidate of options) {
-          state.status = `using your ${candidate} login…`
+          state.status = t('usingLogin', {browser: candidate})
           screen.draw()
           try {
             result = await probe(ytdlp, url, {signal: controller.signal, browser: candidate})
@@ -221,7 +223,7 @@ export async function start({url: initialUrl} = {}) {
     if (process.platform !== 'darwin') return
     execFile(
       'osascript',
-      ['-e', 'display notification "Saved to Downloads" with title "snag" subtitle "✓ snagged"'],
+      ['-e', `display notification "${SAVE_TO.replace(/"/g, '')}" with title "snag" subtitle "✓ ${t('snagged')}"`],
       () => {},
     )
   }
@@ -229,7 +231,7 @@ export async function start({url: initialUrl} = {}) {
   function submit(text) {
     const url = text.trim()
     if (!url) return
-    if (!looksLikeUrl(url)) return home('That does not look like a link. Paste a full url.')
+    if (!looksLikeUrl(url)) return home(t('notALink'))
     const advice = adviseBeforeTrying(url)
     if (advice) {
       state.input = ''
@@ -240,6 +242,11 @@ export async function start({url: initialUrl} = {}) {
   }
 
   const onKey = key => {
+    if (key === '\x0c') {
+      // ^l — cycle language; every screen re-renders from the new strings
+      nextLanguage()
+      return
+    }
     if (key === KEY.escape) {
       if (state.at === 'working' || state.at === 'downloading') return home()
       if (state.at !== 'home') return home()
@@ -284,7 +291,7 @@ export async function start({url: initialUrl} = {}) {
 
   screen.open((frame, size) => {
     const body = view[state.at === 'home' ? 'home' : state.at](state, frame, size)
-    return [...body, '', '', hints(HINTS[state.at] ?? [], size.cols)]
+    return [...body, '', '', hints([...hintsFor(state.at), ['^l', LANGUAGE_NAMES[language()]]], size.cols)]
   }, onKey)
 
   // launching with a url, or with one already on the clipboard, skips the typing

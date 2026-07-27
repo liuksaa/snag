@@ -8,6 +8,7 @@
 // pick is the sharpest one that plays everywhere.
 
 import {bytes} from '../paint.mjs'
+import {t} from '../i18n.mjs'
 
 const MAX_TIERS = 8
 
@@ -135,8 +136,8 @@ export function buildMenu(info) {
 
 /** One menu row as display text (the view adds colour). */
 export function describe(entry) {
-  if (entry.kind === 'audio') return {left: 'audio only', right: entry.size ? bytes(entry.size) : 'mp3'}
-  if (!entry.resolution) return {left: 'best available', right: ''}
+  if (entry.kind === 'audio') return {left: t('audioOnly'), right: entry.size ? bytes(entry.size) : 'mp3'}
+  if (!entry.resolution) return {left: t('bestAvailable'), right: ''}
   const badge = entry.badge ? ` ${entry.badge}` : ''
   return {
     left: `${entry.resolution}p${badge}`,

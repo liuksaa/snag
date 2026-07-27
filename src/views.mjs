@@ -1,9 +1,10 @@
 // views.mjs — each screen as a pure function: state in, lines out. No I/O here,
 // which keeps every screen trivially previewable and testable.
 
-import {BOLD, RESET, UNBOLD, centre, clip, clock, ink, inkBg, bytes, rate, SHADE, aurora, rgb} from './paint.mjs'
+import {BOLD, RESET, UNBOLD, centre, clip, clock, ink, inkBg, bytes, padTo, rate, SHADE, aurora, rgb, width} from './paint.mjs'
 import {logo, tagline} from './logo.mjs'
 import {describe, NEEDS_VLC} from './core/formats.mjs'
+import {t} from './i18n.mjs'
 import {tidyLink} from './core/recent.mjs'
 
 const BOX = Math.min(64, 60)
@@ -23,16 +24,16 @@ const shell = (frame, size, body, animate = true) => [
  */
 function field(text, caret, cols) {
   const inner = BOX - 2 // what sits between the │ walls
-  const label = ' paste a link '
-  const button = ' snag '
+  const label = ` ${t('pasteLink')} `
+  const button = ` ${t('snag')} `
   // between the walls: leading space + text + caret + gap + button
-  const room = inner - 2 - button.length
+  const room = inner - 2 - width(button)
 
   const shown = clip(text || 'https://…', room)
-  const gap = Math.max(0, room - [...shown].length)
+  const gap = Math.max(0, room - width(shown))
 
   const rule = ink(SHADE.rule)
-  const top = rule + '╭' + ink(SHADE.faint) + label + rule + '─'.repeat(inner - label.length) + '╮'
+  const top = rule + '╭' + ink(SHADE.faint) + label + rule + '─'.repeat(Math.max(0, inner - width(label))) + '╮'
   const body =
     rule +
     '│ ' +
@@ -58,7 +59,7 @@ export function home(state, frame, size) {
   if (state.notice) {
     body.push(blank(), centre(ink(SHADE.soft) + state.notice + RESET, size.cols))
   } else if (state.recent.length) {
-    body.push(blank(), centre(ink(SHADE.faint) + 'recent — press its number' + RESET, size.cols))
+    body.push(blank(), centre(ink(SHADE.faint) + t('recent') + RESET, size.cols))
     const LINK = 46
     const indent = ' '.repeat(Math.max(0, Math.floor((size.cols - (LINK + 3)) / 2)))
     state.recent.forEach((url, i) => {
@@ -97,13 +98,13 @@ export function picker(state, frame, size) {
     const on = i === state.cursor
     const {left, right} = describe(entry)
     const mark = on ? rgb(...aurora(0.15)) + '❯ ' : '  '
-    const name = (on ? ink(SHADE.bright) + BOLD : ink(SHADE.text)) + left.padEnd(NAME) + UNBOLD
-    const detail = ink(SHADE.faint) + right.padEnd(DETAIL)
+    const name = (on ? ink(SHADE.bright) + BOLD : ink(SHADE.text)) + padTo(left, NAME) + UNBOLD
+    const detail = ink(SHADE.faint) + padTo(right, DETAIL)
     const flag =
       entry.compatibility === NEEDS_VLC
-        ? ink('#8A6FB0') + 'needs VLC'
+        ? ink('#8A6FB0') + t('needsVlc')
         : entry.suggested
-          ? rgb(...aurora(0.05)) + '★ plays anywhere'
+          ? rgb(...aurora(0.05)) + '★ ' + t('playsAnywhere')
           : ''
     rows.push(indent + mark + name + detail + flag + RESET)
   })
@@ -124,18 +125,18 @@ export function downloading(state, frame, size) {
   }
 
   const stat = state.total
-    ? `${bytes(state.done)} of ${bytes(state.total)}`
+    ? t('ofSize', {done: bytes(state.done), total: bytes(state.total)})
     : state.done
       ? bytes(state.done)
       : ''
-  const parts = state.parts > 1 ? `part ${state.part + 1}/${state.parts}   ` : ''
-  const line = [parts + stat, rate(state.speed), state.eta ? `${clock(state.eta)} left` : '']
+  const parts = state.parts > 1 ? t('part', {n: state.part + 1, total: state.parts}) + '   ' : ''
+  const line = [parts + stat, rate(state.speed), state.eta ? t('timeLeft', {time: clock(state.eta)}) : '']
     .filter(Boolean)
     .join('   ')
 
   // known stages get friendlier words; anything else (a one-time tool fetch)
   // is already human-readable and shown as-is
-  const STAGES = {merging: 'merging video and audio…', extracting: 'extracting audio…'}
+  const STAGES = {merging: t('merging'), extracting: t('extracting')}
   const label = state.stage ? (STAGES[state.stage] ?? state.stage) : ''
 
   return shell(frame, size, [
@@ -149,11 +150,11 @@ export function downloading(state, frame, size) {
 
 export function finished(state, frame, size) {
   return shell(frame, size, [
-    centre(ink(SHADE.ok) + BOLD + '✓ snagged' + UNBOLD + RESET, size.cols),
+    centre(ink(SHADE.ok) + BOLD + '✓ ' + t('snagged') + UNBOLD + RESET, size.cols),
     blank(),
     centre(ink(SHADE.text) + clip(state.file.replace(process.env.HOME ?? '', '~'), 56) + RESET, size.cols),
     blank(),
-    centre(ink(SHADE.faint) + 'press ↵ for another' + RESET, size.cols),
+    centre(ink(SHADE.faint) + t('pressForAnother') + RESET, size.cols),
   ])
 }
 
@@ -178,12 +179,12 @@ function wrap(text, room) {
     line = ''
   }
   for (let word of text.split(/\s+/).filter(Boolean)) {
-    while ([...word].length > room) {
+    while (width(word) > room) {
       flush()
       lines.push([...word].slice(0, room).join(''))
       word = [...word].slice(room).join('')
     }
-    if ([...line].length + [...word].length + (line ? 1 : 0) > room) flush()
+    if (width(line) + width(word) + (line ? 1 : 0) > room) flush()
     line += (line ? ' ' : '') + word
   }
   flush()

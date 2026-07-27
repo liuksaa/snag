@@ -10,7 +10,7 @@ import {hints} from './views.mjs'
 import {download, findFfmpeg, findYtDlp, probe} from './core/engine.mjs'
 import {buildMenu} from './core/formats.mjs'
 import {browsersToTry, definitelyNeedsLogin, loginAdvice, mightNeedLogin} from './core/access.mjs'
-import {explain, looksLikeUrl, profileAdvice, siteName} from './core/links.mjs'
+import {adviseBeforeTrying, explain, looksLikeUrl, siteName} from './core/links.mjs'
 import {loadRecent, remember} from './core/recent.mjs'
 import {readClipboard} from './core/clipboard.mjs'
 
@@ -223,7 +223,7 @@ export async function start({url: initialUrl} = {}) {
     const url = text.trim()
     if (!url) return
     if (!looksLikeUrl(url)) return home('That does not look like a link. Paste a full url.')
-    const advice = profileAdvice(url)
+    const advice = adviseBeforeTrying(url)
     if (advice) {
       state.input = ''
       state.notice = advice

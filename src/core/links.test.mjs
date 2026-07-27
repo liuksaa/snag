@@ -1,6 +1,6 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
-import {explain, looksLikeUrl, profileAdvice, siteName} from './links.mjs'
+import {adviseBeforeTrying, explain, looksLikeUrl, profileAdvice, siteName} from './links.mjs'
 
 const CANNOT = 'Unable to extract data; please report this issue'
 
@@ -51,4 +51,14 @@ test('rejects things that are not links', () => {
   assert.equal(looksLikeUrl('https://youtu.be/abc'), true)
   assert.equal(looksLikeUrl('just some words'), false)
   assert.equal(looksLikeUrl('file:///etc/passwd'), false)
+})
+
+test('says plainly that Threads is not supported, before any network call', () => {
+  const url = 'https://www.threads.com/@oz.apps/post/Da8acJOiE7c?xmt=AQG0Qu8&source_surface=35'
+  const advice = adviseBeforeTrying(url)
+  assert.match(advice, /Threads is not supported/)
+  assert.match(advice, /Instagram/) // offers the way round it
+  assert.equal(adviseBeforeTrying('https://www.threads.net/@a/post/b'), advice)
+  // and a real video link still passes straight through
+  assert.equal(adviseBeforeTrying('https://youtu.be/dQw4w9WgXcQ'), undefined)
 })

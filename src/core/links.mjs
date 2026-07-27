@@ -41,6 +41,14 @@ export function siteName(url) {
 const IG_VIDEO = new Set(['p', 'reel', 'reels', 'tv', 'stories', 'share'])
 
 /**
+ * Anything we can tell the user about a link before spending a network call:
+ * a site yt-dlp cannot handle, or a profile page with no single video on it.
+ */
+export function adviseBeforeTrying(url) {
+  return unsupportedSite(url) ?? profileAdvice(url)
+}
+
+/**
  * If the url is a profile/channel rather than a single video, return advice.
  * Otherwise undefined.
  */
@@ -70,11 +78,26 @@ export function profileAdvice(url) {
   return undefined
 }
 
+// Sites yt-dlp has no extractor for at all, so no amount of retrying will help.
+const UNSUPPORTED = [
+  [
+    /(^|\.)threads\.(net|com)$/,
+    'Threads is not supported yet: yt-dlp has no Threads extractor. If the clip was also posted to Instagram, paste that link instead.',
+  ],
+]
+
+function unsupportedSite(url) {
+  const u = parse(url)
+  if (!u) return undefined
+  const host = u.hostname.toLowerCase().replace(/^www\./, '')
+  return UNSUPPORTED.find(([re]) => re.test(host))?.[1]
+}
+
 // yt-dlp's opaque "I could not find a video here" family
 const CANNOT_EXTRACT = /unable to extract|unsupported url|no video|did not get any data/i
 
 /** Replace an unhelpful extractor error with advice, when we have better. */
 export function explain(url, message) {
-  if (CANNOT_EXTRACT.test(message)) return profileAdvice(url) ?? message
+  if (CANNOT_EXTRACT.test(message)) return unsupportedSite(url) ?? profileAdvice(url) ?? message
   return message
 }

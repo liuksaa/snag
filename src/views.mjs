@@ -155,23 +155,36 @@ export function finished(state, frame, size) {
 }
 
 export function failed(state, frame, size) {
-  const words = String(state.error).split(' ')
-  const lines = []
-  let line = ''
-  for (const w of words) {
-    if ([...line, ...w].length > 54) {
-      lines.push(line.trim())
-      line = ''
-    }
-    line += w + ' '
-  }
-  if (line.trim()) lines.push(line.trim())
-
+  const room = Math.min(58, size.cols - 6)
   return shell(frame, size, [
     centre(ink('#FF6B6B') + '✗' + RESET, size.cols),
     blank(),
-    ...lines.map(l => centre(ink(SHADE.text) + l + RESET, size.cols)),
+    ...wrap(String(state.error), room).map(l => centre(ink(SHADE.text) + l + RESET, size.cols)),
   ])
+}
+
+/**
+ * Wrap to `room` columns. A url has no spaces to break at, so anything longer
+ * than a line is cut mid-token rather than allowed to run off the screen.
+ */
+function wrap(text, room) {
+  const lines = []
+  let line = ''
+  const flush = () => {
+    if (line) lines.push(line)
+    line = ''
+  }
+  for (let word of text.split(/\s+/).filter(Boolean)) {
+    while ([...word].length > room) {
+      flush()
+      lines.push([...word].slice(0, room).join(''))
+      word = [...word].slice(room).join('')
+    }
+    if ([...line].length + [...word].length + (line ? 1 : 0) > room) flush()
+    line += (line ? ' ' : '') + word
+  }
+  flush()
+  return lines.length ? lines : ['']
 }
 
 /** The footer hint strip, rendered by main for whatever screen is up. */

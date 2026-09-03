@@ -160,20 +160,29 @@ export async function start({url: initialUrl} = {}) {
       // "no video formats" is not a failure, it is a different kind of post:
       // an image carousel. yt-dlp cannot fetch those, gallery-dl can.
       if (NO_VIDEO.test(err?.message ?? '') && (await haveGallery())) {
-        try {
-          state.status = t('lookingForImages')
-          screen.draw()
-          const shots = await probeGallery(url, {browser, signal: controller.signal})
+        state.status = t('lookingForImages')
+        screen.draw()
+
+        // The images need the same login the video did. `browser` is only set
+        // when a probe SUCCEEDED with cookies, and this path is reached after
+        // they all failed — so it is usually still empty here, and asking
+        // gallery-dl without cookies just gets refused. Walk the browsers the
+        // same way the video path does.
+        const candidates = browser ? [browser] : await browsersToTry()
+        for (const candidate of candidates) {
           if (controller.signal.aborted) return
-          if (shots.length) {
-            state.title = state.title || ''
-            state.menu = [{kind: 'images', count: shots.length, suggested: true}]
-            state.cursor = 0
-            return go('picker')
+          try {
+            const shots = await probeGallery(url, {browser: candidate, signal: controller.signal})
+            if (controller.signal.aborted) return
+            if (shots.length) {
+              browser = candidate // the download reuses whichever one worked
+              state.menu = [{kind: 'images', count: shots.length, suggested: true}]
+              state.cursor = 0
+              return go('picker')
+            }
+          } catch {
+            // try the next browser; if none work, the original video error stands
           }
-        } catch (galleryErr) {
-          if (controller.signal.aborted) return
-          // fall through to the original video error, which is more useful
         }
       }
       state.error = explain(url, err?.message ?? String(err))

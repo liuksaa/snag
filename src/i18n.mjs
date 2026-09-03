@@ -11,6 +11,7 @@ const EN = {
   snag: 'snag',
   recent: 'recent, press its number',
   lookingUp: 'looking it up…',
+  lookingForImages: 'no video here, checking for images…',
   usingLogin: 'using your {browser} login…',
   fetchingTool: 'first run: fetching {tool}',
   merging: 'merging video and audio…',
@@ -24,6 +25,7 @@ const EN = {
   choose: 'choose',
   back: 'back',
   audioOnly: 'audio only',
+  images: '{n} images',
   bestAvailable: 'best available',
   playsAnywhere: 'plays anywhere',
   needsVlc: 'needs VLC',
@@ -40,6 +42,7 @@ const TRANSLATIONS = {
   en: EN,
 
   hi: {
+  images: '{n} तस्वीरें',
     tagline: 'कोई भी वीडियो सहेजें। पेस्ट करें। सहेजें। हो गया।',
     pasteLink: 'लिंक पेस्ट करें',
     snag: 'सहेजें',
@@ -69,6 +72,7 @@ const TRANSLATIONS = {
   },
 
   es: {
+  images: '{n} imágenes',
     tagline: 'guarda cualquier vídeo. pega. guarda. listo.',
     pasteLink: 'pega un enlace',
     snag: 'guardar',
@@ -98,6 +102,7 @@ const TRANSLATIONS = {
   },
 
   pt: {
+  images: '{n} imagens',
     tagline: 'salve qualquer vídeo. cole. salve. pronto.',
     pasteLink: 'cole um link',
     snag: 'salvar',
@@ -127,6 +132,7 @@ const TRANSLATIONS = {
   },
 
   fr: {
+  images: '{n} images',
     tagline: 'récupérez toute vidéo. collez. récupérez. voilà.',
     pasteLink: 'collez un lien',
     snag: 'récupérer',
@@ -156,6 +162,7 @@ const TRANSLATIONS = {
   },
 
   de: {
+  images: '{n} Bilder',
     tagline: 'jedes Video sichern. einfügen. sichern. fertig.',
     pasteLink: 'Link einfügen',
     snag: 'sichern',
@@ -185,6 +192,7 @@ const TRANSLATIONS = {
   },
 
   ru: {
+  images: '{n} изображений',
     tagline: 'сохраните любое видео. вставьте. сохраните. готово.',
     pasteLink: 'вставьте ссылку',
     snag: 'сохранить',
@@ -214,6 +222,7 @@ const TRANSLATIONS = {
   },
 
   ja: {
+  images: '画像 {n} 枚',
     tagline: 'どんな動画も保存。貼る。保存。完了。',
     pasteLink: 'リンクを貼る',
     snag: '保存',
@@ -243,6 +252,7 @@ const TRANSLATIONS = {
   },
 
   zh: {
+  images: '{n} 张图片',
     tagline: '保存任何视频。粘贴。保存。完成。',
     pasteLink: '粘贴链接',
     snag: '保存',
@@ -272,6 +282,7 @@ const TRANSLATIONS = {
   },
 
   id: {
+  images: '{n} gambar',
     tagline: 'simpan video apa pun. tempel. simpan. selesai.',
     pasteLink: 'tempel tautan',
     snag: 'simpan',
@@ -301,6 +312,7 @@ const TRANSLATIONS = {
   },
 
   tr: {
+  images: '{n} görsel',
     tagline: 'her videoyu indir. yapıştır. indir. tamam.',
     pasteLink: 'bağlantı yapıştır',
     snag: 'indir',

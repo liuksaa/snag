@@ -11,6 +11,7 @@ import {download, findFfmpeg, findYtDlp, probe} from './core/engine.mjs'
 import {buildMenu} from './core/formats.mjs'
 import {browsersToTry, definitelyNeedsLogin, loginAdvice, mightNeedLogin} from './core/access.mjs'
 import {adviseBeforeTrying, explain, looksLikeUrl, siteName} from './core/links.mjs'
+import {downloadGallery, haveGallery, probeGallery} from './core/gallery.mjs'
 import {loadRecent, remember} from './core/recent.mjs'
 import {LANGUAGES, LANGUAGE_NAMES, detectLanguage, language, setLanguage, t} from './i18n.mjs'
 import {loadSettings, saveSetting} from './core/settings.mjs'
@@ -19,6 +20,9 @@ import {replayLogo} from './logo.mjs'
 import {readClipboard} from './core/clipboard.mjs'
 
 const SAVE_TO = path.join(os.homedir(), 'Downloads')
+
+// yt-dlp's way of saying "there is a post here, it just isn't video"
+const NO_VIDEO = /no video formats found|no video could be found|unsupported url/i
 
 const hintsFor = at =>
   ({
@@ -153,6 +157,25 @@ export async function start({url: initialUrl} = {}) {
       go('picker')
     } catch (err) {
       if (controller.signal.aborted) return
+      // "no video formats" is not a failure, it is a different kind of post:
+      // an image carousel. yt-dlp cannot fetch those, gallery-dl can.
+      if (NO_VIDEO.test(err?.message ?? '') && (await haveGallery())) {
+        try {
+          state.status = t('lookingForImages')
+          screen.draw()
+          const shots = await probeGallery(url, {browser, signal: controller.signal})
+          if (controller.signal.aborted) return
+          if (shots.length) {
+            state.title = state.title || ''
+            state.menu = [{kind: 'images', count: shots.length, suggested: true}]
+            state.cursor = 0
+            return go('picker')
+          }
+        } catch (galleryErr) {
+          if (controller.signal.aborted) return
+          // fall through to the original video error, which is more useful
+        }
+      }
       state.error = explain(url, err?.message ?? String(err))
       go('failed')
     }
@@ -164,6 +187,33 @@ export async function start({url: initialUrl} = {}) {
     abort = controller
     Object.assign(state, {done: 0, total: 0, speed: 0, eta: 0, part: 0, parts: 1, stage: ''})
     go('downloading')
+
+    if (choice.kind === 'images') {
+      try {
+        Object.assign(state, {parts: choice.count, total: 0})
+        // a carousel gets its own folder, so five images do not scatter
+        // themselves across Downloads
+        const slug = (state.url.match(/\/(?:p|reel|tv)\/([^/?#]+)/)?.[1] ?? 'post').slice(0, 40)
+        const into = path.join(SAVE_TO, `instagram-${slug}`)
+        const files = await downloadGallery(state.url, {
+          outDir: into,
+          browser,
+          signal: controller.signal,
+          onFile: (_path, n) => {
+            Object.assign(state, {part: n - 1, done: n, total: choice.count})
+            screen.draw()
+          },
+        })
+        state.file = into
+        state.recent = remember(state.url)
+        celebrate()
+        return go('finished')
+      } catch (err) {
+        if (controller.signal.aborted) return
+        state.error = err?.message ?? String(err)
+        return go('failed')
+      }
+    }
 
     const report = {
       onProgress: p => {

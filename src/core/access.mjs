@@ -6,7 +6,21 @@ import os from 'node:os'
 import path from 'node:path'
 
 // Phrases that can only mean "you must be signed in".
-const CERTAIN = ['cookies', 'log in', 'login', 'sign in', 'sign-in', 'authentication', 'private']
+// "members-only" and "join this channel" are YouTube telling a signed-out
+// viewer that a membership gates the video. For a member it is the same wall
+// as any other: the account has access, the request just did not carry it.
+const CERTAIN = [
+  'cookies',
+  'log in',
+  'login',
+  'sign in',
+  'sign-in',
+  'authentication',
+  'private',
+  'members-only',
+  'members only',
+  'join this channel',
+]
 
 // Phrases sites also emit for removed or throttled content. Worth borrowing
 // cookies for (Instagram's login wall looks exactly like this) but never worth

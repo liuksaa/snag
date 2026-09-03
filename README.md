@@ -113,6 +113,24 @@ SNAG_BROWSER=brave snag     # also chrome, firefox, edge, safari
 
 Safari additionally needs Full Disk Access for your terminal.
 
+## Image posts
+
+Not every post is a video. An Instagram carousel of photographs makes yt-dlp say
+"No video formats found", which is true and unhelpful.
+
+When that happens snag looks again with
+[gallery-dl](https://github.com/mikf/gallery-dl), which fetches images the same
+way yt-dlp fetches video, using the same browser cookies. The picker then offers
+the post as `5 images`, and they land together in their own folder under
+`~/Downloads`.
+
+gallery-dl is optional. Without it, an image post simply reports that there is
+no video, as before.
+
+```sh
+python3 -m pip install --user gallery-dl
+```
+
 ## What isn't supported
 
 **Threads.** yt-dlp has no Threads extractor, so those links cannot be

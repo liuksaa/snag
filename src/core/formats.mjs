@@ -136,6 +136,9 @@ export function buildMenu(info) {
 
 /** One menu row as display text (the view adds colour). */
 export function describe(entry) {
+  if (entry.kind === 'images') {
+    return {left: t('images', {n: entry.count}), right: entry.count === 1 ? 'jpg' : `${entry.count} files`}
+  }
   if (entry.kind === 'audio') return {left: t('audioOnly'), right: entry.size ? bytes(entry.size) : 'mp3'}
   if (!entry.resolution) return {left: t('bestAvailable'), right: ''}
   const badge = entry.badge ? ` ${entry.badge}` : ''

@@ -204,7 +204,7 @@ export async function start({url: initialUrl} = {}) {
         // themselves across Downloads
         const slug = (state.url.match(/\/(?:p|reel|tv)\/([^/?#]+)/)?.[1] ?? 'post').slice(0, 40)
         const into = path.join(SAVE_TO, `instagram-${slug}`)
-        const files = await downloadGallery(state.url, {
+        await downloadGallery(state.url, {
           outDir: into,
           browser,
           signal: controller.signal,

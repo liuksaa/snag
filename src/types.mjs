@@ -36,14 +36,19 @@
 /**
  * A row in the quality picker: what it says, and the yt-dlp arguments it means.
  * @typedef {object} Choice
- * @property {'video'|'audio'} kind
- * @property {number} resolution  short side in pixels, 0 when unknown
- * @property {string} codec
- * @property {'anywhere'|'vlc'} compatibility
- * @property {number} size  bytes, 0 when the site does not say
- * @property {string} badge  HD / 2K / 4K, or empty
+ * @property {'video'|'audio'|'images'} kind
+ * @property {number} [count]  how many files an images post holds
  * @property {boolean} suggested
- * @property {string[]} args
+ *
+ * The rest describe a video or audio stream. An images post has none of them:
+ * there is no resolution to pick and no yt-dlp format string, because
+ * gallery-dl fetches it instead.
+ * @property {number} [resolution]  short side in pixels, 0 when unknown
+ * @property {string} [codec]
+ * @property {'anywhere'|'vlc'} [compatibility]
+ * @property {number} [size]  bytes, 0 when the site does not say
+ * @property {string} [badge]  HD / 2K / 4K, or empty
+ * @property {string[]} [args]
  */
 
 /**

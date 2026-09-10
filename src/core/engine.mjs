@@ -167,7 +167,9 @@ process.on('exit', () => running?.kill('SIGTERM'))
 export function download({ytdlp, url, cache, choice, outDir, browser, ffmpeg}, {onProgress, onStage} = {}, signal) {
   const args = [
     ...(cache ? ['--load-info-json', cache] : [url]),
-    ...choice.args,
+    // an images choice carries no format args — it never reaches yt-dlp, but the
+    // type allows it here, so do not assume
+    ...(choice.args ?? []),
     '--no-playlist',
     '--no-warnings',
     '--newline',

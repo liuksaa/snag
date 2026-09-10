@@ -14,6 +14,7 @@ import path from 'node:path'
 /** gallery-dl is a Python module, so it is run through the interpreter. */
 const RUN = ['python3', '-m', 'gallery_dl']
 
+/** @param {string[]} args @param {{signal?: AbortSignal}} [opts] */
 function run(args, {signal} = {}) {
   return new Promise((resolve, reject) => {
     const child = spawn(RUN[0], [...RUN.slice(1), ...args], {signal})
@@ -41,6 +42,10 @@ export async function haveGallery() {
 /**
  * List what a post holds without downloading it. Returns the media urls, which
  * is also how we learn how many there are.
+ *
+ * @param {string} url
+ * @param {{browser?: string, signal?: AbortSignal}} [opts]
+ * @returns {Promise<string[]>}
  */
 export async function probeGallery(url, {browser, signal} = {}) {
   const args = ['--quiet', '-g']
@@ -57,8 +62,13 @@ export async function probeGallery(url, {browser, signal} = {}) {
 /**
  * Fetch every item into its own folder under outDir, named after the post, so a
  * five-image carousel does not scatter five files across Downloads.
+ *
+ * @param {string} url
+ * @param {{outDir: string, browser?: string, signal?: AbortSignal,
+ *          onFile?: (path: string, n: number) => void}} opts
+ * @returns {Promise<string[]>}
  */
-export async function downloadGallery(url, {outDir, browser, signal, onFile} = {}) {
+export async function downloadGallery(url, {outDir, browser, signal, onFile}) {
   const args = [
     '--quiet',
     // -D is the exact folder, so a post lands in one predictable place rather
@@ -95,7 +105,7 @@ export async function downloadGallery(url, {outDir, browser, signal, onFile} = {
   })
   child.stderr.on('data', d => (err += d))
 
-  await new Promise((resolve, reject) => {
+  await /** @type {Promise<void>} */ (new Promise((resolve, reject) => {
     child.on('error', reject)
     child.on('close', code => {
       // the last path arrives without a trailing newline, so it sits in the
@@ -104,7 +114,7 @@ export async function downloadGallery(url, {outDir, browser, signal, onFile} = {
       buffer = ''
       code === 0 ? resolve() : reject(new Error(tidy(err) || `gallery-dl exited ${code}`))
     })
-  })
+  }))
 
   // The printed lines drive the progress counter, but they are not the record
   // of what landed: the first line is the folder rather than a file, so

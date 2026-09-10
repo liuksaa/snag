@@ -179,7 +179,11 @@ export function download({ytdlp, url, cache, choice, outDir, browser, ffmpeg}, {
     'after_move:filepath',
     '--no-simulate',
     '-o',
-    path.join(outDir, '%(title).70s.%(ext)s'),
+    // The id is not decoration. Instagram gives a reel no title, so yt-dlp calls
+    // every one of them "Video by <account>" — download five reels from the same
+    // account and all five target the same filename, leaving you with one file
+    // and no sign the others went anywhere. The id makes each name unique.
+    path.join(outDir, '%(title).70s [%(id)s].%(ext)s'),
   ]
   if (browser) args.push('--cookies-from-browser', browser)
   if (ffmpeg) args.push('--ffmpeg-location', ffmpeg)

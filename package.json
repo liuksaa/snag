@@ -15,7 +15,7 @@
   },
   "scripts": {
     "start": "node bin/snag.mjs",
-    "test": "node --test src/",
+    "test": "node --test",
     "check": "tsc -p jsconfig.json",
     "vibe": "node vibe.mjs",
     "keys": "node keys.mjs"
